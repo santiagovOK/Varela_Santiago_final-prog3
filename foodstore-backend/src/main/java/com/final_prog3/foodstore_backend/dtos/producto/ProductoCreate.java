@@ -1,5 +1,7 @@
 package com.final_prog3.foodstore_backend.dtos.producto;
 
+// Santiago Octavio Varela / @santiagovOK (GitHub) <santiago.varela@tupad.utn.edu.ar>
+
 import com.final_prog3.foodstore_backend.entities.Producto;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;

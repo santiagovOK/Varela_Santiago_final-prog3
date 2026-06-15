@@ -1,5 +1,7 @@
 package com.final_prog3.foodstore_backend.controllers;
 
+// Santiago Octavio Varela / @santiagovOK (GitHub) <santiago.varela@tupad.utn.edu.ar>
+
 import com.final_prog3.foodstore_backend.dtos.producto.ProductoCreate;
 import com.final_prog3.foodstore_backend.dtos.producto.ProductoDto;
 import com.final_prog3.foodstore_backend.dtos.producto.ProductoEdit;

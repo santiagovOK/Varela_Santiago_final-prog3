@@ -1,5 +1,7 @@
 package com.final_prog3.foodstore_backend.dtos.pedido;
 
+// Santiago Octavio Varela / @santiagovOK (GitHub) <santiago.varela@tupad.utn.edu.ar>
+
 import com.final_prog3.foodstore_backend.enums.Estado;
 import jakarta.validation.constraints.NotNull;
 

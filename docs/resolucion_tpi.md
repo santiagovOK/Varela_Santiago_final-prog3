@@ -51,7 +51,7 @@ Teniendo en cuenta el punto de partida y la visión integral que propone el trab
 #### ¿Por qué?                                                                                     
 Guardar contraseñas en texto plano es una vulnerabilidad grave, más allá de que esto es exigido en las consignas del trabajo práctico. Aplicar el hash SHA-256   asegura que ni siquiera teniendo acceso a la base de datos se puedan ver las contraseñas reales. Además, disponer de un endpoint de login devuelve el DTO del usuario autenticado si es válido, que es lo que el frontend va a usar para persistir su sesión y saber qué rol tiene el que acaba de entrar.
 
-### 4. Gestión de Pedidos y Control de Stock (Paso 2)
+### 4. Gestión de Pedidos y Control de Stock
 
 - **Épica:** EP-04 (Gestión de Pedidos)
 - **Sprint:** Sprint 3 (Pedidos)
@@ -64,3 +64,14 @@ Guardar contraseñas en texto plano es una vulnerabilidad grave, más allá de q
 
 #### ¿Por qué?
 El control de stock y cálculo de precios a nivel backend (resuelto mediante la interfaz `Calculable` implementada en `Pedido`) evita que se generen ventas fantasma o que ciertas peticiones manipulen los montos a pagar desde el cliente. Por su parte, la separación y actualización de la estructura de base de datos entre `Usuario` y `Pedido` obedece de manera estricta al diseño propuesto en el UML (el diagrama asume que un Usuario es dueño de sus pedidos, pero el pedido no necesita saber quién es su emisor en su estructura intrínseca dentro del código Java). Por otro lado, la utilización de `IllegalArgumentException` asegura la detención del proceso de compra de forma genérica, logrando un control de fallos básico.
+
+### 5. Refinamiento Arquitectónico y Excepciones
+
+- **Épica:** EP-05 (Infraestructura y Arquitectura).
+- **Historias de Usuario:** "Manejo de Errores Global" y "Configuración de CORS".
+- **Clases Modificadas y Creadas:**
+  - `AdviceController`: Se incorporó un `@ExceptionHandler` para `MethodArgumentNotValidException`, permitiendo interceptar de manera global los fallos de validación provenientes de los DTOs (`@Valid`). Esto genera una respuesta JSON limpia mapeando cada campo con su error, retornando un estado `400 Bad Request`.
+  - `WebConfig` (Nueva): Se creó una clase de configuración que implementa `WebMvcConfigurer` para habilitar CORS (Cross-Origin Resource Sharing) de forma global y centralizada, sin tener que hacerlo en cada uno de los controladores. Esto habilita las solicitudes provenientes del puerto 5173 (puerto local por defecto de Vite).
+
+#### ¿Por qué?
+Centralizar las excepciones en `AdviceController` simplifica los controladores y servicios, evitando repetitivos bloques `try-catch` y logrando respuestas estandarizadas que el frontend puede procesar fácilmente. Al aprovechar excepciones de Java nativas y genéricas (como `IllegalArgumentException` o `NullPointerException`) y de Spring, se logra un flujo consistente y  vinculado a la especificación sin llevar el proyecto de clases innecesarias. Finalmente, la habilitación de CORS de manera centralizada es esencial en arquitecturas separadas (Frontend/Backend) para evitar que el navegador del cliente bloquee la petición por cuestiones de seguridad.

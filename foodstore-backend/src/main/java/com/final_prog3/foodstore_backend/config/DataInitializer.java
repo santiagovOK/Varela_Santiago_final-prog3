@@ -1,5 +1,7 @@
 package com.final_prog3.foodstore_backend.config;
 
+// Santiago Octavio Varela / @santiagovOK (GitHub) <santiago.varela@tupad.utn.edu.ar>
+
 import org.springframework.stereotype.Component;
 import jakarta.annotation.PostConstruct;
 

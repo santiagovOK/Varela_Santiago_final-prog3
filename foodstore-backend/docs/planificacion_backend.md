@@ -28,7 +28,7 @@ El estado inicial de ambas partes del proyecto provienen de sus repositorios bas
   - Implementar un endpoint parcial o PUT específico para que el Admin actualice el estado del pedido (`PATCH /api/pedidos/{id}/status`).
 
 ### Paso 3: Refinamiento Arquitectónico (Épica 5)
-- **Centralización de Excepciones:** Refinar el `AdviceController` para atrapar `MethodArgumentNotValidException` (validaciones de DTOs), excepciones personalizadas (`NotFoundException`, `InsufficientStockException`) y retornar un formato JSON estandarizado con los errores.
+- **Centralización de Excepciones:** Refinar el `AdviceController` para atrapar `MethodArgumentNotValidException` (validaciones de DTOs) y retornar un formato JSON estandarizado con los errores.
 - **CORS:** Confirmar que todos los controladores tengan el acceso CORS necesario para que el frontend en el puerto 5173 pueda consumir la API sin restricciones.
 
 ---
