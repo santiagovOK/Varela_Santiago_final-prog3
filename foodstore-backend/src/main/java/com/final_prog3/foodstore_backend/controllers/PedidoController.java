@@ -49,4 +49,16 @@ public class PedidoController {
         pedidoService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
+
+    // TPI: endpoint para poder usar el método findByUsuario() de PedidosServiceImp
+    @GetMapping("/usuario/{id}")
+    public ResponseEntity<List<PedidoDto>> getByUsuario(@PathVariable Long id) {
+        return ResponseEntity.ok(pedidoService.findByUsuarioId(id));
+    }
+
+    // TPI: endpoint con PATCH para poder usar el método updateStatus() de PedidosServiceImp
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<PedidoDto> updateStatus(@PathVariable Long id, @jakarta.validation.Valid @RequestBody com.final_prog3.foodstore_backend.dtos.pedido.PedidoStatusEdit statusEdit) {
+        return ResponseEntity.ok(pedidoService.updateStatus(id, statusEdit.estado()));
+    }
 }

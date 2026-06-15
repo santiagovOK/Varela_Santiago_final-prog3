@@ -50,3 +50,17 @@ Teniendo en cuenta el punto de partida y la visión integral que propone el trab
 
 #### ¿Por qué?                                                                                     
 Guardar contraseñas en texto plano es una vulnerabilidad grave, más allá de que esto es exigido en las consignas del trabajo práctico. Aplicar el hash SHA-256   asegura que ni siquiera teniendo acceso a la base de datos se puedan ver las contraseñas reales. Además, disponer de un endpoint de login devuelve el DTO del usuario autenticado si es válido, que es lo que el frontend va a usar para persistir su sesión y saber qué rol tiene el que acaba de entrar.
+
+### 4. Gestión de Pedidos y Control de Stock (Paso 2)
+
+- **Épica:** EP-04 (Gestión de Pedidos)
+- **Sprint:** Sprint 3 (Pedidos)
+- **Historias de Usuario:** "Creación de Pedido", "Visualización de Historial de Pedidos" y "Gestión de Estados de Pedido".
+- **Clases Modificadas y Creadas:**
+  - `PedidoServiceImp`: Se incorporó lógica en el método `save()` para verificar el stock de los productos. Si no hay cantidad suficiente, se arroja un `IllegalArgumentException`. Si el pedido se efectúa, el stock se descuenta correspondientemente. Además, se añadió la obtención de pedidos específicos por ID del cliente (`findByUsuarioId`) y un método de actualización de estados (`updateStatus`).
+  - `PedidoController`: Se agregaron los endpoints `GET /api/pedidos/usuario/{id}` para el historial del usuario, y el parcial `PATCH /api/pedidos/{id}/status` para que el Admin progrese el estado del pedido.
+  - `PedidoStatusEdit` (Nueva): DTO exclusivo para mapear y validar el nuevo estado proveniente del frontend en las peticiones PATCH.
+  - `Usuario`, `Pedido`, `PedidoDto` y `PedidoCreate`: Se corrigieron las relaciones acorde al diagrama UML sugerido. Se dispuso de una relación unidireccional mapeada con `@OneToMany` del lado de la entidad `Usuario`, suprimiendo la bidireccionalidad. La lógica de creación ahora persiste el pedido atado a ese usuario sin romper el modelo.
+
+#### ¿Por qué?
+El control de stock y cálculo de precios a nivel backend (resuelto mediante la interfaz `Calculable` implementada en `Pedido`) evita que se generen ventas fantasma o que ciertas peticiones manipulen los montos a pagar desde el cliente. Por su parte, la separación y actualización de la estructura de base de datos entre `Usuario` y `Pedido` obedece de manera estricta al diseño propuesto en el UML (el diagrama asume que un Usuario es dueño de sus pedidos, pero el pedido no necesita saber quién es su emisor en su estructura intrínseca dentro del código Java). Por otro lado, la utilización de `IllegalArgumentException` asegura la detención del proceso de compra de forma genérica, logrando un control de fallos básico.

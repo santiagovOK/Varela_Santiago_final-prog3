@@ -9,6 +9,7 @@ import com.final_prog3.foodstore_backend.service.ProductoService;
 import com.final_prog3.foodstore_backend.service.PedidoService;
 
 import com.final_prog3.foodstore_backend.dtos.usuario.UsuarioCreate;
+import com.final_prog3.foodstore_backend.dtos.usuario.UsuarioDto;
 import com.final_prog3.foodstore_backend.dtos.categoria.CategoriaCreate;
 import com.final_prog3.foodstore_backend.dtos.categoria.CategoriaDto;
 import com.final_prog3.foodstore_backend.dtos.producto.ProductoCreate;
@@ -50,8 +51,8 @@ public class DataInitializer {
         System.out.println("------ INICIALIZANDO BASE DE DATOS ------");
 
         // 1. Instanciar 2 Usuarios
-        usuarioService.save(new UsuarioCreate("Juan", "Pérez", "juan@mail.com", "123456789", "pass123", Rol.USUARIO));
-        usuarioService.save(new UsuarioCreate("María", "Gómez", "maria@mail.com", "987654321", "pass456", Rol.ADMIN));
+        UsuarioDto u1 = usuarioService.save(new UsuarioCreate("Juan", "Pérez", "juan@mail.com", "123456789", "pass123", Rol.USUARIO));
+        UsuarioDto u2 = usuarioService.save(new UsuarioCreate("María", "Gómez", "maria@mail.com", "987654321", "pass456", Rol.ADMIN));
 
         // 2. Instanciar 3 Categorias
         CategoriaDto c1 = categoriaService.save(new CategoriaCreate("Electrónica", "Aparatos electrónicos"));
@@ -74,18 +75,18 @@ public class DataInitializer {
         pedidoService.save(new PedidoCreate(Estado.PENDIENTE, FormaPago.EFECTIVO, List.of(
                 new DetallePedidoCreate(1, p1.id()),
                 new DetallePedidoCreate(2, p4.id())
-        )));
+        ), u1.id()));
 
         pedidoService.save(new PedidoCreate(Estado.CONFIRMADO, FormaPago.TARJETA, List.of(
                 new DetallePedidoCreate(4, p6.id()),
                 new DetallePedidoCreate(1, p5.id()),
                 new DetallePedidoCreate(2, p7.id())
-        )));
+        ), u1.id()));
 
         pedidoService.save(new PedidoCreate(Estado.TERMINADO, FormaPago.TRANSFERENCIA, List.of(
                 new DetallePedidoCreate(1, p10.id()),
                 new DetallePedidoCreate(1, p8.id())
-        )));
+        ), u2.id()));
 
         System.out.println("------ BASE DE DATOS INICIALIZADA CON EXITO ------");
     }

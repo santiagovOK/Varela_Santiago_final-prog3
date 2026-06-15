@@ -39,5 +39,14 @@ public class Usuario extends Base {
     @Enumerated(EnumType.STRING) // Uso @Enumerated para que las posiciones del enum Rol sean catalogadas como Strings.
     private Rol rol;
 
+    // TPI: La relación entre Usuarios y Pedidos no estaba correctamente formulada. Con las líneas subsiguientes se establece la relación unilateral uno a muchos con Pedido. La relación en Java es unilateral de Usuario a Pedido, pero en la BD de la tabla Pedidos se crea `usuario_id`, preservando la integridad.
+    @jakarta.persistence.OneToMany(cascade = jakarta.persistence.CascadeType.ALL, orphanRemoval = true)
+    @jakarta.persistence.JoinColumn(name = "usuario_id") // TPI: JoinColum permite la creación de usuario_id en la tabla Pedidos
+    @lombok.Builder.Default
+    private java.util.Set<Pedido> pedidos = new java.util.HashSet<>();
+
+    public void addPedido(Pedido pedido) {
+        this.pedidos.add(pedido);
+    }
 }
 

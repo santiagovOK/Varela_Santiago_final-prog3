@@ -11,7 +11,8 @@ import java.util.List;
 public record PedidoCreate(
         Estado estado,
         FormaPago formaPago,
-        List<DetallePedidoCreate> detalles
+        List<DetallePedidoCreate> detalles,
+        Long idUsuario
 ) {
     public Pedido toEntity() {
         return Pedido.builder()
