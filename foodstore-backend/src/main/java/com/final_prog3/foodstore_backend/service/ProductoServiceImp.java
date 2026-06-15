@@ -36,19 +36,22 @@ public class ProductoServiceImp implements ProductoService {
 
         @Override
         public ProductoDto findById(Long id) {
-            Producto producto = productoRepository.findById(id).orElseThrow(() -> new NullPointerException("No se encontró el producto con id: " + id));
+            // TPI: se agregan los métodos para usar findBy correctamente con respecto a la baja lógica
+            Producto producto = productoRepository.findByIdAndEliminadoFalse(id).orElseThrow(() -> new NullPointerException("No se encontró el producto con id: " + id));
             return ProductoDto.toDto(producto);
         }
 
         @Override
         public List<ProductoDto> findAll() {
-            List<Producto> productos = productoRepository.findAll();
+            // TPI: se agregan los métodos para usar findBy correctamente con respecto a la baja lógica
+            List<Producto> productos = productoRepository.findByEliminadoFalse();
             return productos.stream().map(ProductoDto::toDto).toList();
         }
 
         @Override
         public ProductoDto update(ProductoEdit productoEdit, Long idProducto) {
-            Producto producto = productoRepository.findById(idProducto).orElseThrow(() -> new NullPointerException("No se encontró el producto con id: " + idProducto));
+            // TPI: se agregan los métodos para usar findBy correctamente con respecto a la baja lógica
+            Producto producto = productoRepository.findByIdAndEliminadoFalse(idProducto).orElseThrow(() -> new NullPointerException("No se encontró el producto con id: " + idProducto));
             Categoria categoria = null;
             if (productoEdit.idCategoria() != null) {
                 categoria = categoriaRepository.findById(productoEdit.idCategoria()).orElseThrow(() -> new RuntimeException("No se encontró la categoria con id: " + productoEdit.idCategoria()));
@@ -60,7 +63,8 @@ public class ProductoServiceImp implements ProductoService {
 
         @Override
         public void deleteById(Long id) {
-            Producto producto = productoRepository.findById(id).orElseThrow(() -> new NullPointerException("No se encontró el producto con id: " + id));
+            // TPI: se agregan los métodos para usar findBy correctamente con respecto a la baja lógica
+            Producto producto = productoRepository.findByIdAndEliminadoFalse(id).orElseThrow(() -> new NullPointerException("No se encontró el producto con id: " + id));
             producto.setEliminado(true);
             productoRepository.save(producto);
         }

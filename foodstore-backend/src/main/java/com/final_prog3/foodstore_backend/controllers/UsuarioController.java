@@ -4,6 +4,7 @@ import com.final_prog3.foodstore_backend.dtos.usuario.UsuarioCreate;
 import com.final_prog3.foodstore_backend.dtos.usuario.UsuarioDto;
 import com.final_prog3.foodstore_backend.dtos.usuario.UsuarioEdit;
 import com.final_prog3.foodstore_backend.service.UsuarioService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -48,10 +49,15 @@ public class UsuarioController {
         System.out.println("=======================================");
         return ResponseEntity.ok(usuario);
     }
-
+    // TPI - Se agrega @Valid como anotación de validación de Spring Boot
     @PostMapping
-    public ResponseEntity<UsuarioDto> create(@RequestBody UsuarioCreate usuarioCreate) {
+    public ResponseEntity<UsuarioDto> create(@Valid @RequestBody UsuarioCreate usuarioCreate) {
         return ResponseEntity.status(HttpStatus.CREATED).body(usuarioService.save(usuarioCreate));
+    }
+    // TPI - Creación de un endpoint para login con @PostMapping
+    @PostMapping("/login")
+    public ResponseEntity<UsuarioDto> login(@Valid @RequestBody com.final_prog3.foodstore_backend.dtos.usuario.UsuarioLogin loginDto) {
+        return ResponseEntity.ok(usuarioService.login(loginDto.mail(), loginDto.password()));
     }
 
     @PutMapping("/{id}")

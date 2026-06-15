@@ -4,6 +4,7 @@ import com.final_prog3.foodstore_backend.dtos.producto.ProductoCreate;
 import com.final_prog3.foodstore_backend.dtos.producto.ProductoDto;
 import com.final_prog3.foodstore_backend.dtos.producto.ProductoEdit;
 import com.final_prog3.foodstore_backend.service.ProductoService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,9 +36,9 @@ public class ProductoController {
     }
 
     // TP10 - Es más preciso usar `create` en el @PostMapping, ya que el cliente justamente crea un recursos. `save` (guardar) se encarga la capa de persistencia (servicio, repositorio; en el video explicativo está distinto)
-
+    // TPI - Se agrega @Valid como anotación de validación de Spring Boot
     @PostMapping
-    public ResponseEntity<ProductoDto> create(@RequestBody ProductoCreate productoCreate) {
+    public ResponseEntity<ProductoDto> create(@Valid @RequestBody ProductoCreate productoCreate) {
         return ResponseEntity.status(HttpStatus.CREATED).body(productoService.save(productoCreate));
     }
 

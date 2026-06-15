@@ -21,6 +21,7 @@ public class UsuarioServiceImp implements UsuarioService {
     @Override
     public UsuarioDto save(UsuarioCreate usuarioCreate) {
         Usuario usuario = usuarioCreate.toEntity();
+        usuario.setPassword(hashPassword(usuario.getPassword()));
         usuario = usuarioRepository.save(usuario);
         return UsuarioDto.toDto(usuario);
     }
@@ -37,6 +38,17 @@ public class UsuarioServiceImp implements UsuarioService {
         return UsuarioDto.toDto(usuario);
     }
 
+    // TPI: Método login, que verifica que el password cifrado que ingresa el usuario coincida con el que está guardado en la base de datos
+    @Override
+    public UsuarioDto login(String mail, String password) {
+        Usuario usuario = usuarioRepository.findByMail(mail)
+                .orElseThrow(() -> new NullPointerException("Credenciales inválidas"));
+        if (!usuario.getPassword().equals(hashPassword(password))) {
+            throw new IllegalArgumentException("Credenciales inválidas");
+        }
+        return UsuarioDto.toDto(usuario);
+    }
+
     @Override
     public List<UsuarioDto> findAll() {
         List<Usuario> usuarios = usuarioRepository.findAll();
@@ -47,6 +59,10 @@ public class UsuarioServiceImp implements UsuarioService {
     public UsuarioDto update(UsuarioEdit usuarioEdit, Long idUsuario) {
         Usuario usuario = usuarioRepository.findById(idUsuario).orElseThrow(() -> new NullPointerException("No se encontró el usuario con id: " + idUsuario));
         usuarioEdit.applyTo(usuario);
+        // TPI: Condición para cambio de password con cifrado
+        if (usuarioEdit.password() != null) {
+            usuario.setPassword(hashPassword(usuarioEdit.password()));
+        }
         usuario = usuarioRepository.save(usuario);
         return UsuarioDto.toDto(usuario);
     }
@@ -56,5 +72,26 @@ public class UsuarioServiceImp implements UsuarioService {
         Usuario usuario = usuarioRepository.findById(id).orElseThrow(() -> new NullPointerException("No se encontró el usuario con id: " + id));
         usuario.setEliminado(true);
         usuarioRepository.save(usuario);
+    }
+
+    // TPI: Método hashPassword para tomar la contraseña en texto plano y transformarla en una cadena alfanumérica (un hash) utilizando el algoritmo SHA-256, para guardarlo de forma segura.
+    private String hashPassword(String password) {
+        try {
+            java.security.MessageDigest digest = java.security.MessageDigest.getInstance("SHA-256"); // Obtención del algoritmo SHA-256 a través de MessageDigest
+            byte[] encodedhash = digest.digest(password.getBytes(java.nio.charset.StandardCharsets.UTF_8)); // Conversión a bytes para encriptar
+            StringBuilder hexString = new StringBuilder(2 * encodedhash.length);
+            // Conversión de bytes a hexadecimal para hacer legible la contraseña encriptada
+            for (byte b : encodedhash) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) {
+                    hexString.append('0');
+                }
+                hexString.append(hex);
+            }
+            // Retorna String final que va con una longitud fija de 64 caracteres. Es el texto cifrado que finalmente se guarda en la base de datos
+            return hexString.toString();
+        } catch (java.security.NoSuchAlgorithmException e) {
+            throw new RuntimeException("Error al encriptar contraseña", e);
+        }
     }
 }

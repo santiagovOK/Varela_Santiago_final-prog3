@@ -28,20 +28,20 @@ public class CategoriaServiceImpl implements CategoriaService {
 
     @Override
     public CategoriaDto findById(Long id) {
-        Categoria categoria = categoriaRepository.findById(id)
+        Categoria categoria = categoriaRepository.findByIdAndEliminadoFalse(id) // TPI: se agregan los métodos para usar findBy correctamente con respecto a la baja lógica
                 .orElseThrow(() -> new NullPointerException("No se encontró categoría con el id: " + id));
         return CategoriaDto.toDto(categoria);
     }
 
     @Override
     public List<CategoriaDto> findAll() {
-        return categoriaRepository.findAll().stream()
+        return categoriaRepository.findByEliminadoFalse().stream() // TPI: se agregan los métodos para usar findBy correctamente con respecto a la baja lógica
                 .map(CategoriaDto::toDto).toList();
     }
 
     @Override
     public CategoriaDto update(CategoriaEdit categoriaEdit, Long idCategoria) {
-        Categoria categoria = categoriaRepository.findById(idCategoria)
+        Categoria categoria = categoriaRepository.findByIdAndEliminadoFalse(idCategoria) // TPI: se agregan los métodos para usar findBy correctamente con respecto a la baja lógica
                 .orElseThrow(() -> new NullPointerException("No se encontró categoría con el id: " + idCategoria));
         categoriaEdit.applyTo(categoria);
         categoria = categoriaRepository.save(categoria);
@@ -50,7 +50,7 @@ public class CategoriaServiceImpl implements CategoriaService {
 
     @Override
     public void deleteById(Long id) {
-        Categoria categoria = categoriaRepository.findById(id)
+        Categoria categoria = categoriaRepository.findByIdAndEliminadoFalse(id)
                 .orElseThrow(() -> new NullPointerException("No se encontró categoría con el id: " + id));
         
         // Baja lógica: marcamos la entidad como eliminada en lugar de borrarla de la BD (ya estaba implementado en mis entidades desde Base).

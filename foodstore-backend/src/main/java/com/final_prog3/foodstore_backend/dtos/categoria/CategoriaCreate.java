@@ -3,8 +3,10 @@ package com.final_prog3.foodstore_backend.dtos.categoria;
 // Santiago Octavio Varela / @santiagovOK (GitHub) <santiago.varela@tupad.utn.edu.ar>
 
 import com.final_prog3.foodstore_backend.entities.Categoria;
+import jakarta.validation.constraints.NotBlank;
 
 public record CategoriaCreate(
+        @NotBlank(message = "El nombre es obligatorio")
         String nombre,
         String descripcion
 ) {
