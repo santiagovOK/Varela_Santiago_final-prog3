@@ -8,22 +8,19 @@ export const checkAuhtUser = (
   redireccion2: string,
   rol: Rol
 ) => {
-  console.log("comienzo de checkeo");
+  const userStr = getUSer();
 
-  const user = getUSer();
-
-  if (!user) {
-    console.log("no existe en local");
+  // TPI: Si no se inicio se sión o la sesión expiro, envía al usuario a la página de login
+  if (!userStr) {
     navigate(redireccion1);
     return;
-  } else {
-    console.log("existe pero no tiene el rol necesario");
+  }
 
-    const parseUser: IUser = JSON.parse(user);
-    if (parseUser.role !== rol) {
-      navigate(redireccion2);
-      return;
-    }
+  // TPI: Condición para evaluar si el rol del usuario es correcto. Si dice usuario, redirige al inicio del cliente (redirección 2)
+  const parseUser: IUser = JSON.parse(userStr);
+  if (parseUser.rol !== rol) {
+    navigate(redireccion2);
+    return;
   }
 };
 

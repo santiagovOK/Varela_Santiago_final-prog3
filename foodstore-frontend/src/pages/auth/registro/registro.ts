@@ -1,19 +1,4 @@
-import type { Rol } from "../../../types/Rol";
 import { navigate } from "../../../utils/navigate";
-
-// Estructura del usuario que se guarda dentro del array "users" en localStorage.
-// Incluye password porque el Paso 2 (login) valida email + password reales.
-interface IUserRecord {
-	email: string;
-	password: string;
-	role: Rol;
-}
-
-// Clave centralizada para evitar hardcoding de strings repetidos en varias lineas. Si se decide cambiar el nombre de la clave, se actualiza solo aqui.
-const USERS_KEY = "users";
-
-// La consigna pide "sin selector de rol" en el formulario de registro. Por eso el rol se decide por codigo y queda fijo en "client".
-const DEFAULT_ROLE: Rol = "client";
 
 // Referencias a elementos del DOM que vamos a usar en todo el flujo.
 
@@ -22,95 +7,67 @@ const DEFAULT_ROLE: Rol = "client";
 const form = document.getElementById("registro-form") as HTMLFormElement | null;
 const inputEmail = document.getElementById("email") as HTMLInputElement | null;
 const inputPassword = document.getElementById("password") as HTMLInputElement | null;
-
-// Obtiene la lista de usuarios guardada en localStorage.
-// Siempre devuelve un array valido para que el resto del flujo no se rompa.
-const getUsers = (): IUserRecord[] => {
-	// localStorage devuelve string | null. Si no existe la clave, llega null.
-	const rawUsers = localStorage.getItem(USERS_KEY);
-
-	// Caso base: aun no hay usuarios registrados.
-	if (!rawUsers) {
-		return [];
-	}
-
-	try {
-		// Convertimos el JSON a un valor desconocido primero para no asumir tipo sin validar.
-		const parsed = JSON.parse(rawUsers) as unknown;
-
-		// Solo aceptamos arrays. Si el dato guardado fue alterado a otro tipo, devolvemos [] para mantener el flujo robusto.
-		return Array.isArray(parsed) ? (parsed as IUserRecord[]) : [];
-	} catch {
-		// Si el JSON esta corrupto o no parsea, devolvemos [] en lugar de romper la app.
-		return [];
-	}
-};
-
-// Persiste el array completo de usuarios.
-// localStorage solo guarda strings, por eso se serializa con JSON.stringify.
-const saveUsers = (users: IUserRecord[]): void => {
-	localStorage.setItem(USERS_KEY, JSON.stringify(users));
-};
+const inputNombre = document.getElementById("nombre") as HTMLInputElement | null;
 
 // Guard claúsula de seguridad: evita usar addEventListener sobre null.
 // Si el HTML cambia y falta algun elemento requerido, falla temprano con error explicito.
 if (!form || !inputEmail || !inputPassword) {
-	throw new Error("No se encontraron los elementos del formulario de registro.");
+  throw new Error("No se encontraron los elementos del formulario de registro.");
 }
 
 // Evento principal del Paso 1: captura datos del formulario y registra el usuario.
-form.addEventListener("submit", (event: SubmitEvent) => {
-	console.log("[registro] Evento submit detectado");
+form.addEventListener("submit", async (event: SubmitEvent) => {
+  console.log("[registro] Evento submit detectado");
 
-	// Evita recarga de pagina para manejar la validacion y persistencia con TS.
-	event.preventDefault();
+  // Evita recarga de pagina para manejar la validacion y persistencia con TS.
+  event.preventDefault();
 
-	// Normalizamos email para comparar duplicados de forma consistente. Ejemplo: Example@Mail.com y example@mail.com deben contar como el mismo usuario.
-	const email = inputEmail.value.trim().toLowerCase();
+  // Normalizamos email para comparar duplicados de forma consistente. Ejemplo: Example@Mail.com y example@mail.com deben contar como el mismo usuario.
+  const email = inputEmail.value.trim().toLowerCase();
 
-	// Se conserva la password tal como la ingresa el usuario.
-	// En un entorno real se deberia hashear en backend, pero aqui es un TP frontend.
-	const password = inputPassword.value;
+  // Se conserva la password tal como la ingresa el usuario.
 
-	// Validacion minima para no guardar registros vacios.
-	if (!email || !password) {
-		console.log("[registro] Validacion fallida: email o password vacios");
-		alert("Completá email y contraseña.");
-		return;
-	}
+  const password = inputPassword.value; // TPI: ahora el password es "hasheado" en el backend
+  const nombre = inputNombre ? inputNombre.value.trim() : "Usuario Nuevo";
 
-	// Cargamos el estado actual para evaluar duplicados y luego agregar el nuevo registro.
-	const users = getUsers();
+  // Validación minima para no guardar registros vacios.
+  if (!email || !password) {
+    console.log("[registro] Validacion fallida: email o password vacios");
+    alert("Completá email y contraseña.");
+    return;
+  }
 
-	// Evita registros duplicados comparando por email normalizado.
-	const userExists = users.some((user) => user.email === email);
-	if (userExists) {
-		console.log("[registro] Registro rechazado: email duplicado", email);
-		alert("Ese email ya está registrado.");
-		return;
-	}
+  // TPI: Para vinculación con el backend. Ahora se captura el nombre, email y contraseña y se realiza un POST al backend para el registro de usuario. Se hace hacia el @PostMapping que está como /api/usuarios, ya que no hay ruta adicional en el controlador base del backend.
+  try {
+    const response = await fetch("/api/usuarios", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      // La consigna pide no elegir rol en UI: se asigna client por defecto. (Lo mapeamos a USUARIO en backend)
+      body: JSON.stringify({ nombre, email, password, rol: "USUARIO" }),
+    });
 
-	// La consigna pide no elegir rol en UI: se asigna client por defecto.
-	const newUser: IUserRecord = {
-		email,
-		password,
-		role: DEFAULT_ROLE,
-	};
+    if (!response.ok) {
+      console.log("[registro] Registro rechazado: email duplicado o error de validacion");
+      alert("Error al registrar el usuario. Verifica los datos.");
+      return;
+    }
 
-	// Agregamos el nuevo usuario al array y persistimos todo el conjunto actualizado.
-	users.push(newUser);
-	saveUsers(users);
-	console.log("[registro] Usuario registrado correctamente", {
-		email,
-		role: DEFAULT_ROLE,
-		totalUsers: users.length,
-	});
+    console.log("[registro] Usuario registrado correctamente", {
+      email,
+      rol: "USUARIO",
+    });
 
-	// Feedback simple de UX y limpieza del formulario para siguiente intento.
-	alert("Registro exitoso. Ahora podés iniciar sesión.");
-	form.reset();
+    // TPI: Feedback simple de UX y limpieza del formulario para siguiente intento.
+    alert("Registro exitoso. Ahora podés iniciar sesión.");
+    form.reset();
 
-	// Navega al login para continuar con el Paso 2 del trabajo practico.
-	console.log("[registro] Redireccionando a login");
-	navigate("../login/login.html");
+    // TPI: Navega al login si el registro fue exitoso
+    console.log("[registro] Redireccionando a login");
+    navigate("../login/login.html");
+  } catch (error) {
+    console.error("[registro] Error en registro:", error);
+    alert("Error de conexión con el servidor.");
+  }
 });

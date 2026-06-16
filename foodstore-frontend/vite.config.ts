@@ -5,6 +5,13 @@ export default defineConfig({
   server: {
     port: 5173,
     open: "/src/pages/auth/login/login.html",
+    // TPI: se añade un proxy para que todas las peticiones que el frontend haga hacia /api sean redirigidas internamente al puerto donde corre Spring Boot (8080), evitando posibles problemas.
+    proxy: {
+      "/api": {
+        target: "http://localhost:8080",
+        changeOrigin: true,
+      },
+    },
   },
   build: {
     outDir: "dist",

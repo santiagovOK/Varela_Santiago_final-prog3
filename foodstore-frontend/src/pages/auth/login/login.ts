@@ -1,48 +1,11 @@
 import type { IUser } from "../../../types/IUser";
-import type { Rol } from "../../../types/Rol";
+import { saveUser } from "../../../utils/localStorage";
 import { navigate } from "../../../utils/navigate";
-
-// Tipo del usuario persistido en la clave "users" (registro completo con password).
-interface IUserRecord {
-  email: string;
-  password: string;
-  role: Rol;
-}
-
-const USERS_KEY = "users";
-const SESSION_KEY = "userData";
 
 // Referencias DOM del formulario de login.
 const form = document.getElementById("form") as HTMLFormElement | null;
 const inputEmail = document.getElementById("email") as HTMLInputElement | null;
 const inputPassword = document.getElementById("password") as HTMLInputElement | null;
-
-// Carga segura de usuarios desde localStorage.
-const getUsers = (): IUserRecord[] => {
-  const rawUsers = localStorage.getItem(USERS_KEY);
-
-  if (!rawUsers) {
-    console.log("[login] No hay usuarios registrados en localStorage");
-    return [];
-  }
-
-  try {
-    const parsed = JSON.parse(rawUsers) as unknown;
-    if (!Array.isArray(parsed)) {
-      console.log("[login] La clave users no contiene un array valido");
-      return [];
-    }
-    return parsed as IUserRecord[];
-  } catch {
-    console.log("[login] Error parseando users desde localStorage");
-    return [];
-  }
-};
-
-// Guarda la sesion activa en userData.
-const saveSession = (user: IUser): void => {
-  localStorage.setItem(SESSION_KEY, JSON.stringify(user));
-};
 
 // Guard clause para evitar errores si cambia el HTML.
 if (!form || !inputEmail || !inputPassword) {
@@ -50,7 +13,7 @@ if (!form || !inputEmail || !inputPassword) {
 }
 
 // Evento principal de login.
-form.addEventListener("submit", (event: SubmitEvent) => {
+form.addEventListener("submit", async (event: SubmitEvent) => {
   console.log("[login] Evento submit detectado");
   event.preventDefault();
 
@@ -64,38 +27,50 @@ form.addEventListener("submit", (event: SubmitEvent) => {
     return;
   }
 
-  const users = getUsers();
+  // TPI: Para vinculación con el backend. Ahora se realiza un POST para verificar si las credenciales del usuario son válidas en el login.
+  try {
+    // Busca coincidencia real de credenciales.
+    const response = await fetch("/api/usuarios/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    });
 
-  // Busca coincidencia real de credenciales (Paso 2).
-  const matchedUser = users.find(
-    (user) => user.email === email && user.password === password
-  );
+    if (!response.ok) {
+      console.log("[login] Credenciales invalidas para", email);
+      alert("Credenciales inválidas o error de servidor.");
+      return;
+    }
 
-  if (!matchedUser) {
-    console.log("[login] Credenciales invalidas para", email);
-    alert("Credenciales inválidas.");
-    return;
+    const userData = await response.json();
+
+    // Construye la sesion en el formato tipado del proyecto.
+    const userSession: IUser = {
+      id: userData.id,
+      nombre: userData.nombre,
+      email: userData.email,
+      rol: userData.rol || userData.role, // Manejamos posible variacion en respuesta
+    };
+
+    // Guarda la sesion activa en userData.
+    saveUser(userSession);
+    console.log("[login] Sesion iniciada correctamente", {
+      email: userSession.email,
+      rol: userSession.rol,
+    });
+
+    if (userSession.rol === "ADMIN") {
+      console.log("[login] Redireccionando a home de admin");
+      navigate("/src/pages/admin/home/home.html");
+      return;
+    }
+
+    console.log("[login] Redireccionando a home de client");
+    navigate("/src/pages/client/home/home.html");
+  } catch (error) {
+    console.error("[login] Error en login:", error);
+    alert("Error de conexión con el servidor.");
   }
-
-  // Construye la sesion en el formato tipado del proyecto.
-  const userSession: IUser = {
-    email: matchedUser.email,
-    role: matchedUser.role,
-    loggedIn: true,
-  };
-
-  saveSession(userSession);
-  console.log("[login] Sesion iniciada correctamente", {
-    email: userSession.email,
-    role: userSession.role,
-  });
-
-  if (userSession.role === "admin") {
-    console.log("[login] Redireccionando a home de admin");
-    navigate("/src/pages/admin/home/home.html");
-    return;
-  }
-
-  console.log("[login] Redireccionando a home de client");
-  navigate("/src/pages/client/home/home.html");
 });

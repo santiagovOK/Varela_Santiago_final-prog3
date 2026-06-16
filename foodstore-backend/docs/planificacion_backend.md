@@ -31,6 +31,12 @@ El estado inicial de ambas partes del proyecto provienen de sus repositorios bas
 - **Centralización de Excepciones:** Refinar el `AdviceController` para atrapar `MethodArgumentNotValidException` (validaciones de DTOs) y retornar un formato JSON estandarizado con los errores.
 - **CORS:** Confirmar que todos los controladores tengan el acceso CORS necesario para que el frontend en el puerto 5173 pueda consumir la API sin restricciones.
 
+### Paso 4: Ajustes de Integración (Post-Revisión del Frontend)
+*Nota: Estos cambios se agregaron luego de una revisión del estado del frontend para asegurar la correcta integración del TPI.*
+- **Inclusión del Rol en DTO:** Añadir el campo `rol` en `UsuarioDto` para que el cliente pueda conocer la identidad de la sesión y proteger las rutas adecuadamente (Admin/Cliente).
+- **Validación del Apellido:** Retirar la validación estricta (`@NotBlank`) del campo `apellido` en `UsuarioCreate`, ya que el formulario de registro no cuenta con este campo de entrada.
+- **Nomenclatura del Email:** Considerar que el frontend envía la propiedad `email`, pero el backend mapea actualmente `mail`. Se deberá ajustar la nomenclatura de los DTOs (`UsuarioLogin`, `UsuarioCreate`, `UsuarioDto`) a `email` para mantener estricta coherencia.
+
 ---
 
 ## Estructura del Proyecto (Estado Actual vs. Faltantes)

@@ -93,3 +93,18 @@ Centralizar las excepciones en `AdviceController` simplifica los controladores y
 
 #### ¿Por qué?
 Establecer la estructura de directorios y registrar los puntos de entrada es lo básico en una aplicación empaquetada con Vite, más allá de que también las consignas solicitan crear esos directorios. Esto no solo organiza las responsabilidades de la interfaz (separando vistas de Administrador, Cliente y Tienda), sino que asegura que cuando se ejecuta la compilación para producción, Vite integre correctamente todos los archivos HTML y genere el ruteo básico de la aplicación web.
+
+### 2. Módulo de Autenticación y Seguridad
+
+- **Épica:** EP-02 (Gestión de Usuarios).
+- **Sprint:** Sprint 2 (Usuarios y Productos).
+- **Historias de Usuario:** "Login de Usuario", "Registro de Usuario" y "Protección de Rutas por Rol".
+- **Archivos Modificados y Creados:**
+  - `vite.config.ts`: Se configuró un proxy (`/api` a `http://localhost:8080`) para eludir restricciones de CORS en entorno de desarrollo.
+  - `src/types/IUser.ts` y `Rol.ts`: Se adaptó la firma tipada de usuario (`rol: "USUARIO" | "ADMIN"`) para coincidir con la respuesta `UsuarioDto` proveniente del backend.
+  - `src/utils/auth.ts`: Se refactorizó la función `checkAuhtUser` para consumir el usuario persistido en el `localStorage`, validar su existencia y confirmar que su rol coincida con el requerido.
+  - `src/pages/auth/login/login.ts` y `registro/registro.ts`: Se reemplazó la validación mockeada por peticiones HTTP (`fetch`) hacia los endpoints reales de la API (`POST /api/usuarios/login` y `POST /api/usuarios`). El token o perfil devuelto se guarda exitosamente en el `localStorage`.
+  - Vistas de `admin/` (`home.ts`, `categories.ts`, `products.ts`, `orders.ts`): Se insertó la invocación a `checkAuhtUser(..., "ADMIN")` en la parte superior para denegar el acceso a clientes regulares o usuarios no autenticados, expulsándolos hacia el login o al home correspondiente.
+
+#### ¿Por qué?
+Reemplazar el guardado mockeado en memoria por una integración real con la API permite que el sistema deje de ser una maqueta visual y pase a consumir e identificar registros persistentes en la base de datos. Por otro lado, la validación estricta de rutas de administración mediante la comparación del rol (`"ADMIN"`) garantiza una barrera de seguridad UX/UI, evitando que los clientes accedan y manipulen la gestión interna de la tienda web.
