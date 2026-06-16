@@ -75,3 +75,21 @@ El control de stock y cálculo de precios a nivel backend (resuelto mediante la 
 
 #### ¿Por qué?
 Centralizar las excepciones en `AdviceController` simplifica los controladores y servicios, evitando repetitivos bloques `try-catch` y logrando respuestas estandarizadas que el frontend puede procesar fácilmente. Al aprovechar excepciones de Java nativas y genéricas (como `IllegalArgumentException` o `NullPointerException`) y de Spring, se logra un flujo consistente y  vinculado a la especificación sin llevar el proyecto de clases innecesarias. Finalmente, la habilitación de CORS de manera centralizada es esencial en arquitecturas separadas (Frontend/Backend) para evitar que el navegador del cliente bloquee la petición por cuestiones de seguridad.
+
+---
+
+## Frontend
+
+### 1. Configuración Estructural y Enrutamiento
+
+- **Archivos Modificados y Creados:**
+  - **Directorios y Vistas Nuevas:** Se crearon las carpetas, vistas HTML y scripts (`.ts`) para las rutas faltantes especificadas en la planificación:
+    - `admin/categories` (`categories.html`, `categories.ts`)
+    - `admin/products` (`products.html`, `products.ts`)
+    - `admin/orders` (`orders.html`, `orders.ts`)
+    - `store/productDetail` (`productDetail.html`, `productDetail.ts`)
+    - `client/orders` (`orders.html`, `orders.ts`)
+  - `vite.config.ts`: Se añadieron los nuevos puntos de entrada (entry points) (`adminCategories`, `adminProducts`, `adminOrders`, `productDetail`, `clientOrders`) dentro de la configuración `build.rollupOptions.input`.
+
+#### ¿Por qué?
+Establecer la estructura de directorios y registrar los puntos de entrada es lo básico en una aplicación empaquetada con Vite, más allá de que también las consignas solicitan crear esos directorios. Esto no solo organiza las responsabilidades de la interfaz (separando vistas de Administrador, Cliente y Tienda), sino que asegura que cuando se ejecuta la compilación para producción, Vite integre correctamente todos los archivos HTML y genere el ruteo básico de la aplicación web.
