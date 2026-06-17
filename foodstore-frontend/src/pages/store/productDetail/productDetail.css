@@ -13,7 +13,7 @@
 .product-detail__back-link {
   display: inline-flex;
   margin-bottom: 1rem;
-  color: var(--clr-text-main);
+  color: var(--color-texto);
   text-decoration: none;
   font-weight: 500;
   transition: opacity 0.2s;
@@ -27,10 +27,10 @@
   display: flex;
   flex-direction: column;
   gap: 2rem;
-  background-color: var(--clr-surface-card);
+  background-color: var(--color-blanco);
   padding: 2rem;
   border-radius: var(--radius-lg, 8px);
-  border: 1px solid var(--clr-surface-border);
+  border: 1px solid var(--color-borde);
 }
 
 @media (min-width: 768px) {
@@ -44,7 +44,7 @@
 .product-detail__media {
   display: flex;
   flex: 1;
-  background-color: white;
+  background-color: var(--color-blanco);
   border-radius: var(--radius-md, 4px);
   overflow: hidden;
   min-width: 250px;
@@ -64,13 +64,13 @@
 }
 
 .product-detail__title {
-  color: var(--clr-primary);
+  color: var(--color-primario);
   margin-bottom: 0.5rem;
   font-size: 2rem;
 }
 
 .product-detail__description {
-  color: var(--clr-text-muted);
+  color: var(--color-texto-mutado);
   margin-bottom: 1.5rem;
   line-height: 1.5;
 }
@@ -79,7 +79,7 @@
   font-size: 1.5rem;
   font-weight: bold;
   margin-bottom: 1rem;
-  color: var(--clr-text-main);
+  color: var(--color-texto);
 }
 
 /* Estado del stock */
@@ -92,11 +92,11 @@
 }
 
 .product-detail__stock--available {
-  color: var(--clr-success, green);
+  color: var(--color-success);
 }
 
 .product-detail__stock--unavailable {
-  color: var(--clr-error, red);
+  color: var(--color-error);
 }
 
 /* TPI: Acciones (Cantidad y button) */
@@ -110,10 +110,10 @@
 .product-detail__qty-input {
   width: 80px;
   padding: 0.5rem;
-  border: 1px solid var(--clr-surface-border);
+  border: 1px solid var(--color-borde);
   border-radius: var(--radius-sm, 4px);
-  background-color: var(--clr-surface-bg);
-  color: var(--clr-text-main);
+  background-color: var(--color-fondo);
+  color: var(--color-texto);
   text-align: center;
 }
 
@@ -123,8 +123,8 @@
 }
 
 .product-detail__add-btn {
-  background-color: var(--clr-primary);
-  color: white;
+  background-color: var(--color-primario);
+  color: var(--color-blanco);
   padding: 0.75rem 1.5rem;
   border: none;
   border-radius: var(--radius-sm, 4px);
@@ -145,7 +145,7 @@
 
 /* TPI: Mensaje feedback */
 .product-detail__feedback {
-  color: var(--clr-success, green);
+  color: var(--color-success);
   margin-top: 1rem;
   font-weight: 500;
   display: none;
@@ -158,12 +158,12 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  color: var(--clr-primary);
+  color: var(--color-primario);
   padding: 3rem;
   gap: 1rem;
 }
 
 .product-detail__message-link {
   text-decoration: underline;
-  color: var(--clr-text-main);
+  color: var(--color-texto);
 }

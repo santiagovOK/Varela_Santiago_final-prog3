@@ -121,3 +121,17 @@ Reemplazar el guardado mockeado en memoria por una integración real con la API 
 
 #### ¿Por qué?
 Migrar el catálogo estático a un consumo real de la API es uno de los puntos más importantes de la integración Frontend-Backend. Esto garantiza que los clientes siempre vean precios actualizados y productos con stock disponible real. Adicionalmente, verificar los precios haciendo un fetch a los productos desde el carrito de compras evita que un usuario malintencionado edite los precios a nivel `localStorage`. Finalmente, la estructuración de clases CSS usando BEM en nuevas vistas previenen que se rompan los estilos del resto de las páginas y mantienen una consistencia con el resto del CSS implementado.
+
+### 4. Módulo Cliente - Mis Pedidos
+
+- **Épica:** EP-04 (Gestión de Pedidos).
+- **Sprint:** Sprint 3 (Pedidos).
+- **Historias de Usuario:** "Visualización de Historial de Pedidos" y "Detalle del Pedido".
+- **Archivos Modificados y Creados:**
+  - `src/types/pedido.ts`: Se crearon los DTOs (`PedidoDto` y `DetallePedidoDto`) que tipifican el contrato con la API para reflejar de forma fidedigna lo enviado por el backend.
+  - `src/pages/client/orders/orders.html` y `orders.css`: Se implementó un layout responsivo mediante Flexbox y metodología BEM, clonando la navegación principal de la tienda para mantener absoluta consistencia. Además, se desarrolló una ventana modal nativa (`<dialog>`) para renderizar el desglose de cada orden.
+  - `src/pages/client/orders/orders.ts`: Se protegió la ruta exigiendo el rol `"USUARIO"` y se integró el endpoint `GET /api/pedidos/usuario/{id}`. La respuesta se mapea de más reciente a más antigua para generar "tarjetas" visuales del historial con su estado, gestionando además la apertura de los detalles dentro del Modal de manera fluida.
+  - `src/styles.css`: Se centralizaron los colores de los estados semánticos (por ejemplo, `--color-status-pendiente-bg`) y demás colores directamente en el `:root` global del proyecto, evitando hardcodeo hexadecimal disperso en los componentes y previniendo la inyección de los mismos desde TypeScript.
+
+#### ¿Por qué?
+Permitirle a un cliente tener una trazabilidad simple de todas sus compras (con precios, fechas y formas de pago) es el flujo final necesario para que un e-commerce se vea confiable. El aprovechamiento de componentes nativos como el `<dialog>` para el modal garantiza robustez, mientras que la eliminación de colores locales duros (hex) fomenta un sistema de diseño desde una única fuente de verdad (`styles.css`, como lo vimos en la primera etapa de la cursada), lo que facilita en el futuro implementar económicamente un posible rediseño de ser necesario.

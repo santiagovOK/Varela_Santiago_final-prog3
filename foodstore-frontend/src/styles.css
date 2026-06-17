@@ -12,6 +12,26 @@
     --color-borde: #ddd;
     --color-focus: #ff4500;
     --color-acento-oscuro: #213931;
+
+    /* TPI: Variables de UI adicionales */
+    --color-texto-mutado: #666;
+    --color-error: #dc3545;
+    --color-success: #28a745;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+    --radius-sm: 4px;
+    --radius-md: 6px;
+    --radius-lg: 8px;
+
+    /* TPI: Colores de estado de pedidos */
+    --color-status-pendiente-bg: #fff3cd;
+    --color-status-pendiente-text: #856404;
+    --color-status-preparacion-bg: #cce5ff;
+    --color-status-preparacion-text: #004085;
+    --color-status-enviado-bg: #d1ecf1;
+    --color-status-enviado-text: #0c5460;
+    --color-status-entregado-bg: #d4edda;
+    --color-status-entregado-text: #155724;
 }
 
 html {
