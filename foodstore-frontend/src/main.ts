@@ -21,12 +21,12 @@ type ProtectedRoute = {
 const protectedRoutes: ProtectedRoute[] = [
 	{
 		routePrefix: "/src/pages/admin/",
-		requiredRole: "admin",
+		requiredRole: "ADMIN", // TPI: Cambié estas propiedades en Rol para que sean más claras. Por eso debí modificarlas aquí.
 		forbiddenRedirect: CLIENT_HOME_PATH,
 	},
 	{
 		routePrefix: "/src/pages/client/",
-		requiredRole: "client",
+		requiredRole: "USUARIO", // TPI: Cambié estas propiedades en Rol para que sean más claras. Por eso debí modificarlas aquí.
 		forbiddenRedirect: ADMIN_HOME_PATH,
 	},
 ];
@@ -73,7 +73,7 @@ export const runRouteGuard = (): void => {
 
 	const sessionUser = parseSessionUser(rawUser);
 
-	if (!sessionUser || !sessionUser.loggedIn) {
+	if (!sessionUser || !sessionUser.id) {
 		console.log("[guard] Sesion ausente o invalida, redirigiendo a login");
 		navigate(LOGIN_PATH);
 		return;
@@ -81,13 +81,12 @@ export const runRouteGuard = (): void => {
 
 	console.log("[guard] Sesion valida", {
 		email: sessionUser.email,
-		role: sessionUser.role,
-		loggedIn: sessionUser.loggedIn,
+		rol: sessionUser.rol,
 	});
 
-	if (sessionUser.role !== protectedRoute.requiredRole) {
+	if (sessionUser.rol !== protectedRoute.requiredRole) {
 		console.log("[guard] Rol no autorizado para esta ruta, redirigiendo", {
-			userRole: sessionUser.role,
+			userRol: sessionUser.rol,
 			requiredRole: protectedRoute.requiredRole,
 			target: protectedRoute.forbiddenRedirect,
 		});

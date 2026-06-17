@@ -4,10 +4,33 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Detalle del Producto | Food Store</title>
-  <link rel="stylesheet" href="/src/styles.css" />
+  <link rel="stylesheet" href="../../../styles.css" />
+  <link rel="stylesheet" href="../home/home.css" />
+  <link rel="stylesheet" href="./productDetail.css" />
 </head>
-<body>
-  <h1>Detalle del Producto</h1>
+<body class="store-home">
+  <header class="store-home__topbar store-home__topbar--row">
+    <div class="store-home__brand">
+      <h1 class="store-home__logo">FoodStore</h1>
+    </div>
+    <nav class="store-home__menu">
+      <ul class="store-home__menu-list store-home__menu-list--row">
+        <li class="store-home__menu-item"><a class="store-home__menu-link" href="../home/home.html">Catalogo</a></li>
+        <li class="store-home__menu-item">
+          <a class="store-home__menu-link" href="../cart/cart.html">
+            Carrito <span class="store-home__cart-count" id="cart-count">0</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </header>
+  
+  <main class="store-home__content product-detail__container" id="detail-container">
+    <div class="product-detail__message">
+      <p>Cargando producto...</p>
+    </div>
+  </main>
+
   <script type="module" src="./productDetail.ts"></script>
 </body>
 </html>

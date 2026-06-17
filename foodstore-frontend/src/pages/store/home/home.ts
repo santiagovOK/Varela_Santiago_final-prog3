@@ -1,6 +1,6 @@
-import { PRODUCTS } from "../../../data/data";
 import { getCart, saveCart, type CartMap } from "../../../utils/localStorage" // Funciones para manejar el carrito en localStorage
 import type { Product } from "../../../types/product";
+import type { ICategory } from "../../../types/categoria";
 
 // 1 - Referencias del DOM al inicio
 
@@ -17,14 +17,14 @@ if (!productsList || !searchInput || !searchFeedback || !categoryList || !cartCo
   throw new Error("Faltan elementos del DOM en la vista store/home.");
 }
 
-// Dataset base para catálogo: excluye con `filter` productos marcados como eliminados.
-let baseProducts: Product[] = PRODUCTS.filter((product) => !product.eliminado);
+// Variables globales para datos desde el backend
+let baseProducts: Product[] = [];
+let baseCategories: ICategory[] = [];
 
 // 2 - Estado de pantalla simple ("single source of truth")
 
 // En lugar de manejar variables sueltas, es posible concentral el estado de la vista en un objeto. Esto simplifica el refresco de UI y evita inconsistencias.
 // A fines de este parcial, voy a dejarlo aquí para respetar la estructura de archivos, pero podría ir modularizado en la carpeta types/
-
 type HomeViewState = {
   selectedCategory: string;
   searchTerm: string;
@@ -34,15 +34,14 @@ type HomeViewState = {
 // Estado inicial:
 // - selectedCategory: "all" para mostrar catálogo completo
 // - searchTerm: vacío al cargar la vista
-// - filteredProducts: arranca con todos los productos base
+// - filteredProducts: arranca con todos los productos base (se setean en el fetch)
 const state: HomeViewState = {
   selectedCategory: "all",
   searchTerm: "",
-  filteredProducts: [...baseProducts],
+  filteredProducts: [],
 };
 
 // Helper para volver al estado inicial de filtros. Se puede usar también si se agrega un botón de "limpiar filtros" en la UI.
-
 const resetViewState = (): void => {
   state.selectedCategory = "all";
   state.searchTerm = "";
@@ -59,7 +58,6 @@ const normalizeText = (value: string): string => {
 // Si selectedCategory es "all", no aplica filtro por categoría.
 const matchesCategory = (product: Product, selectedCategory: string): boolean => {
   if (selectedCategory === "all") return true;
-
   return product.categorias.some((category) => {
     return normalizeText(category.nombre) === normalizeText(selectedCategory);
   });
@@ -70,7 +68,6 @@ const matchesCategory = (product: Product, selectedCategory: string): boolean =>
 const matchesSearch = (product: Product, searchTerm: string): boolean => {
   const normalizedSearch = normalizeText(searchTerm);
   if (!normalizedSearch) return true;
-
   return normalizeText(product.nombre).includes(normalizedSearch);
 };
 
@@ -85,7 +82,6 @@ const applyFilters = (): void => {
     const searchOk = matchesSearch(product, state.searchTerm);
     // El producto se incluye en el resultado solo si cumple ambos criterios (categoría y búsqueda) usando el operador AND.
     return categoryOk && searchOk;
-
     // Salida: actualiza state.filteredProducts con los productos que cumplen ambos criterios, para luego ser renderizados en la vista.
   });
 };
@@ -116,7 +112,6 @@ const syncCartCountFromStorage = (): void => {
 };
 
 // Función para agregar un producto al carrito, actualiza el carrito en localStorage y sincroniza el contador visual del carrito en la UI. Recibe el productId como string (obtenido del atributo data-product-id del botón).
-
 const addProductToCartStorage = (productId: string): void => {
   const cart = getCart(); // Obtiene el estado actual del carrito desde localStorage (par id - cantidad)
   const previousQuantity = cart[productId] ?? 0; // Obtiene la cantidad actual del producto en el carrito, si no existe se considera 0
@@ -137,22 +132,24 @@ const addProductToCartStorage = (productId: string): void => {
 // Crea el HTML de una tarjeta de producto usando la estructura BEM de home.html.
 // El botón "Agregar" queda preparado con data-product-id para conectarlo después al carrito.
 const createProductCardTemplate = (product: Product): string => {
-  const firstCategoryName = product.categorias[0]?.nombre ?? "Sin categoria";
+  const firstCategoryName = product.categorias?.[0]?.nombre || "Sin categoria";
+  const imageSrc = product.imagen && product.imagen.startsWith("http") ? product.imagen : `/images/${product.imagen || 'placeholder.jpg'}`;
 
   return [
     '<li class="store-home__product-item">',
     '  <article class="product-card product-card--col">',
     '    <figure class="product-card__media">',
-    `      <img class="product-card__image" src="/images/${product.imagen}" alt="${product.nombre}" />`,
+    `      <img class="product-card__image" src="${imageSrc}" alt="${product.nombre}" />`,
     "    </figure>",
     '    <div class="product-card__body product-card__body--col">',
     `      <p class="product-card__category">${firstCategoryName}</p>`,
     `      <h3 class="product-card__title">${product.nombre}</h3>`,
     `      <p class="product-card__description">${product.descripcion}</p>`,
     "    </div>",
-    '    <footer class="product-card__footer product-card__footer--row">',
-    `      <p class="product-card__price">${formatPrice(product.precio)}</p>`,
-    `      <button class="product-card__add-btn" type="button" data-product-id="${product.id}">Agregar</button>`,
+    '    <footer class="product-card__footer product-card__footer--row" style="flex-wrap: wrap; gap: 0.5rem; justify-content: space-between;">',
+    `      <p class="product-card__price" style="width: 100%;">${formatPrice(product.precio)}</p>`,
+    `      <button class="product-card__add-btn" type="button" data-product-id="${product.id}" style="flex: 1;">Agregar</button>`,
+    `      <a class="store-home__menu-link" href="../productDetail/productDetail.html?id=${product.id}" style="flex: 1; text-align: center; border: 1px solid var(--clr-primary); border-radius: 4px; padding: 0.5rem; text-decoration: none; color: var(--clr-primary);">Ver Detalle</a>`,
     "    </footer>",
     "  </article>",
     "</li>",
@@ -169,10 +166,31 @@ const renderProducts = (): void => {
     return createProductCardTemplate(product);
     // createProductCardTemplate es la función auxiliar que genera el HTML de cada tarjeta, recibiendo un producto como argumento y devolviendo el string con la estructura HTML correspondiente.
   });
-
+  
   productsList.innerHTML = cardsMarkup.join("");
-
   // Salida: el contenedor UL con id "products-list" (el listado) queda actualizado con las tarjetas de los productos que cumplen los criterios de búsqueda y categoría, según el estado actual de state.filteredProducts.
+};
+
+const renderCategories = (): void => {
+  categoryList.innerHTML = "";
+  
+  const allBtnHtml = `
+    <li class="store-home__category-item">
+      <button class="store-home__category-btn ${state.selectedCategory === 'all' ? 'store-home__category-btn--active' : ''}" type="button" data-category="all">
+        Todos los productos
+      </button>
+    </li>
+  `;
+  
+  const categoriesHtml = baseCategories.map(cat => `
+    <li class="store-home__category-item">
+      <button class="store-home__category-btn ${state.selectedCategory === cat.nombre ? 'store-home__category-btn--active' : ''}" type="button" data-category="${cat.nombre}">
+        ${cat.nombre}
+      </button>
+    </li>
+  `).join("");
+  
+  categoryList.innerHTML = allBtnHtml + categoriesHtml;
 };
 
 // Actualiza el mensaje de estado debajo del buscador.
@@ -211,10 +229,10 @@ const updateSearchFeedback = (): void => {
 // 1) recalcula filtros
 // 2) renderiza productos
 // 3) actualiza feedback visual
-
 const refreshView = (): void => {
   applyFilters(); // Aplica criterios de filtrado
   renderProducts(); // refresca el listado de productos en la UI según el estado actual de state.filteredProducts
+  renderCategories();
   updateSearchFeedback(); // Actualiza el mensaje de feedback debajo del buscador para reflejar el estado actual del filtrado
 
   console.log("[store-home] Vista refrescada", {
@@ -246,12 +264,7 @@ categoryList.addEventListener("click", (event) => {
     const category = target.getAttribute("data-category") || "all";
     state.selectedCategory = category;
 
-    // Actualiza la clase activa en los botones de categorías
-    const buttons = categoryList.querySelectorAll(".store-home__category-btn");
-    buttons.forEach((button) => {
-      button.classList.toggle("store-home__category-btn--active", button === target);
-    });
-
+    // Actualiza la clase activa en los botones de categorías (ahora se renderizan de nuevo en refreshView, pero está bien loggear)
     refreshView();
 
     console.log("[store-home] Categoria seleccionada", {
@@ -262,31 +275,58 @@ categoryList.addEventListener("click", (event) => {
   }
 });
 
-
-
 // Event listener para agregar productos al carrito
 productsList.addEventListener("click", (event) => {
   const target = event.target as HTMLElement;
-  const button = target.closest(".product-card__add-btn") as HTMLButtonElement | null;
+  const addBtn = target.closest(".product-card__add-btn") as HTMLButtonElement | null;
 
-  if (!button) return;
-
-  const productId = button.getAttribute("data-product-id");
-  if (!productId) return;
-
-  console.log("[store-home] Click en agregar producto", { productId });
-  addProductToCartStorage(productId);
+  if (addBtn) {
+    const productId = addBtn.getAttribute("data-product-id");
+    if (productId) {
+      console.log("[store-home] Click en agregar producto", { productId });
+      addProductToCartStorage(productId);
+    }
+  }
 });
 
 // 6 - Inicialización de la vista
 
-// Inicializa la vista al cargar la página
-refreshView();
-syncCartCountFromStorage();
+// TPI: Ahora se hacen las llamadas correspondientes al backend con fetch para cargar los datos (ya no el data.ts mockeado que nos ofrecieron en el primer parcial)
 
-console.log("[store-home] Catalogo inicializado", {
-  totalProducts: baseProducts.length,
-  selectedCategory: state.selectedCategory,
-  searchTerm: state.searchTerm || "(vacio)",
-  filteredProducts: state.filteredProducts.length,
-});
+const loadData = async () => {
+  try {
+    const [productsRes, categoriesRes] = await Promise.all([
+      fetch("/api/productos"),
+      fetch("/api/categorias")
+    ]);
+
+    if (!productsRes.ok || !categoriesRes.ok) {
+      throw new Error("Error al obtener datos del servidor");
+    }
+
+    const products: Product[] = await productsRes.json();
+    const categories: ICategory[] = await categoriesRes.json();
+
+    // Dataset base para catálogo: excluye con `filter` productos marcados como eliminados.
+    baseProducts = products.filter(p => !p.eliminado && p.disponible);
+    baseCategories = categories.filter(c => !c.eliminado);
+    
+    state.filteredProducts = [...baseProducts];
+
+    // Inicializa la vista al cargar la página
+    refreshView();
+    syncCartCountFromStorage();
+
+    console.log("[store-home] Catalogo inicializado", {
+      totalProducts: baseProducts.length,
+      selectedCategory: state.selectedCategory,
+      searchTerm: state.searchTerm || "(vacio)",
+      filteredProducts: state.filteredProducts.length,
+    });
+  } catch (error) {
+    console.error("Error al cargar datos iniciales:", error);
+    searchFeedback.textContent = "Error al cargar el catalogo. Por favor, intenta de nuevo.";
+  }
+};
+
+loadData();

@@ -108,3 +108,16 @@ Establecer la estructura de directorios y registrar los puntos de entrada es lo 
 
 #### ¿Por qué?
 Reemplazar el guardado mockeado en memoria por una integración real con la API permite que el sistema deje de ser una maqueta visual y pase a consumir e identificar registros persistentes en la base de datos. Por otro lado, la validación estricta de rutas de administración mediante la comparación del rol (`"ADMIN"`) garantiza una barrera de seguridad UX/UI, evitando que los clientes accedan y manipulen la gestión interna de la tienda web.
+
+### 3. Módulo Cliente - Catálogo y Carrito
+
+- **Épica:** EP-03 (Gestión de Productos) y EP-04 (Gestión de Pedidos).
+- **Sprint:** Sprint 2 (Productos) y Sprint 3 (Pedidos).
+- **Historias de Usuario:** "Visualización de Catálogo", "Detalle de Producto", "Gestión de Carrito de Compras" y "Confirmación de Compra / Creación de Pedido".
+- **Archivos Modificados y Creados:**
+  - `src/pages/store/home/home.ts` y `home.html`: Se eliminaron los datos mockeados y se integró un `fetch` hacia `/api/productos` y `/api/categorias`. Ahora el catálogo y los filtros de la tienda se renderizan dinámicamente según la base de datos real.
+  - `src/pages/store/productDetail/productDetail.ts`, `productDetail.html` y `productDetail.css`: Se implementó completamente la vista de detalle leyendo el ID de la URL (`/api/productos/{id}`). Se añadió lógica de validación de stock y estilos modulares bajo la metodología BEM para evitar conflictos de CSS en el resto de la aplicación.
+  - `src/pages/store/cart/cart.ts` y `cart.html`: El carrito ahora contrasta los IDs guardados en `localStorage` con un fetch a `/api/productos` para calcular los precios y subtotales reales. Se habilitó la selección de forma de pago y el botón de Checkout, que ejecuta un `POST /api/pedidos` tomando el `idUsuario` de la sesión actual.
+
+#### ¿Por qué?
+Migrar el catálogo estático a un consumo real de la API es uno de los puntos más importantes de la integración Frontend-Backend. Esto garantiza que los clientes siempre vean precios actualizados y productos con stock disponible real. Adicionalmente, verificar los precios haciendo un fetch a los productos desde el carrito de compras evita que un usuario malintencionado edite los precios a nivel `localStorage`. Finalmente, la estructuración de clases CSS usando BEM en nuevas vistas previenen que se rompan los estilos del resto de las páginas y mantienen una consistencia con el resto del CSS implementado.
