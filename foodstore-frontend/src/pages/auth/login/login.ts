@@ -51,7 +51,7 @@ form.addEventListener("submit", async (event: SubmitEvent) => {
       id: userData.id,
       nombre: userData.nombre,
       email: userData.email,
-      rol: userData.rol || userData.role, // Manejamos posible variacion en respuesta
+      rol: userData.rol, // Manejamos posible variacion en respuesta
     };
 
     // Guarda la sesion activa en userData.

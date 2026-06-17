@@ -8,7 +8,7 @@ import jakarta.validation.constraints.NotBlank;
 public record UsuarioLogin(
         @NotBlank(message = "El mail es obligatorio")
         @Email(message = "Debe ser un email válido")
-        String mail,
+        String email,
         @NotBlank(message = "La contraseña es obligatoria")
         String password
 ) {}

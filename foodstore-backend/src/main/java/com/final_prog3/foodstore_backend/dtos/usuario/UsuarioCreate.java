@@ -16,7 +16,7 @@ public record UsuarioCreate(
         String apellido,
         @NotBlank(message = "El mail es obligatorio")
         @Email(message = "Debe ser un email válido")
-        String mail,
+        String email,
         String celular,
         @NotBlank(message = "La contraseña es obligatoria")
         String password,
@@ -27,7 +27,7 @@ public record UsuarioCreate(
         return Usuario.builder()
                 .nombre(this.nombre)
                 .apellido(this.apellido)
-                .mail(this.mail)
+                .mail(this.email)
                 .celular(this.celular)
                 .password(this.password)
                 .rol(this.rol)

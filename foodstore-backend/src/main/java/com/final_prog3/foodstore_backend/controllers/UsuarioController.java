@@ -44,8 +44,8 @@ public class UsuarioController {
     // TP10 - Get por Email solicitado en las consignas.
 
     @GetMapping("/search")
-    public ResponseEntity<UsuarioDto> getByMail(@RequestParam String mail) {
-        UsuarioDto usuario = usuarioService.findByMail(mail);
+    public ResponseEntity<UsuarioDto> getByMail(@RequestParam String email) {
+        UsuarioDto usuario = usuarioService.findByMail(email);
         System.out.println("====== [CONSOLA] Búsqueda por MAIL ====");
         System.out.println("Usuario encontrado: " + usuario);
         System.out.println("=======================================");
@@ -59,7 +59,7 @@ public class UsuarioController {
     // TPI - Creación de un endpoint para login con @PostMapping
     @PostMapping("/login")
     public ResponseEntity<UsuarioDto> login(@Valid @RequestBody com.final_prog3.foodstore_backend.dtos.usuario.UsuarioLogin loginDto) {
-        return ResponseEntity.ok(usuarioService.login(loginDto.mail(), loginDto.password()));
+        return ResponseEntity.ok(usuarioService.login(loginDto.email(), loginDto.password()));
     }
 
     @PutMapping("/{id}")

@@ -76,6 +76,18 @@ El control de stock y cálculo de precios a nivel backend (resuelto mediante la 
 #### ¿Por qué?
 Centralizar las excepciones en `AdviceController` simplifica los controladores y servicios, evitando repetitivos bloques `try-catch` y logrando respuestas estandarizadas que el frontend puede procesar fácilmente. Al aprovechar excepciones de Java nativas y genéricas (como `IllegalArgumentException` o `NullPointerException`) y de Spring, se logra un flujo consistente y  vinculado a la especificación sin llevar el proyecto de clases innecesarias. Finalmente, la habilitación de CORS de manera centralizada es esencial en arquitecturas separadas (Frontend/Backend) para evitar que el navegador del cliente bloquee la petición por cuestiones de seguridad.
 
+### 6. Correcciones Estructurales Post-Integración (Frontend-Backend)
+
+- **Épica:** EP-02 (Gestión de Usuarios) y EP-04 (Gestión de Pedidos).
+- **Sprint:** Sprint 4 (Integración y Refinamiento).
+- **Historias de Usuario:** "Login de Usuario" y "Creación de Pedido".
+- **Clases Modificadas:**
+  - `UsuarioCreate`, `UsuarioLogin`, `UsuarioDto`, y `UsuarioController`: Luego de una revisión del comportamiento y el envío de datos desde el Frontend, se refactorizó el atributo `mail` para que pase a llamarse `email` en todos los DTOs. Esto mantiene estricta coherencia en la nomenclatura de las peticiones entre ambos ecosistemas, evitando errores de validación (`400 Bad Request`) durante el inicio de sesión.
+  - `PedidoServiceImp`: Se agregó la anotación `@Transactional` a nivel clase para evitar el error `LazyInitializationException` generado durante la inicialización de los datos de prueba, asegurando que la transacción de BD se mantenga viva al vincular un nuevo pedido a las colecciones "Lazy" del `Usuario`.
+
+#### ¿Por qué?
+Durante el proceso de conexión real, la pequeña divergencia de nomenclatura entre el cliente web (`email`) y la API (`mail`) causaba rupturas de contrato en los DTOs; normalizar los nombres desde el Backend formaliza la estructura JSON que espera la aplicación. Esto fue así porque la nomenclatura había sido heredada desde los TPs/parcial que hicimos previamente en la asignatura. Por otro lado, la omisión de transaccionalidad al manipular entidades complejas provocaba la caída del servidor local, por lo que su agregado estabilizó permanentemente el arranque simultáneo de ambos proyectos.
+
 ---
 
 ## Frontend
