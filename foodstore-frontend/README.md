@@ -60,3 +60,17 @@ Esto generará de manera exitosa el directorio `dist/` con las páginas registra
 Durante el desarrollo se utilizaron `console.log` para seguir el flujo de las funcionalidades del parcial (búsqueda de productos, filtros por categoría, y gestión del carrito en `localStorage`), así como los flujos previos de registro, login, guard de rutas y logout. Se utilizaron prefijos por contexto (ej. `[store]`, `[cart]`, `[auth]`) para facilitar la lectura en consola.
 
 Estos logs se usaron solo como soporte de depuración y desarrollo, asegurando que el estado del catálogo y el contenido del carrito funcionen correctamente en todo momento, evitando además exponer datos sensibles.
+
+---
+
+## Ejecución Concurrente (Frontend + Backend)
+
+Para facilitar el desarrollo, se ha incorporado la dependencia `concurrently` (ver en package.json). Así, es posible levantar tanto el servidor de **Vite** (Frontend) como el de **Spring Boot** (Backend) ejecutando un solo comando desde este directorio (`foodstore-frontend`):
+
+```bash
+npm run dev:all
+```
+
+> **Nota:** Esto asume que el backend está ubicado en `../foodstore-backend` respecto a este repositorio y que Java/Gradle está instalado.
+
+> **Aclaración sobre compilación:** No es necesario ejecutar `npm run build` o `pnpm build` antes de este comando. `dev:all` levanta el servidor de desarrollo de Vite, el cual compila el código al vuelo y se comunica en tiempo real con el backend de Spring Boot a través del proxy. `build` se reserva estrictamente para cuando se busca compilar el proyecto para Producción.

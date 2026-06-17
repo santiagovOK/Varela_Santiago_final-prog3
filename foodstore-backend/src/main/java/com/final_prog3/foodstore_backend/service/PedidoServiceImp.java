@@ -14,10 +14,12 @@ import com.final_prog3.foodstore_backend.repository.ProductoRepository;
 import com.final_prog3.foodstore_backend.repository.UsuarioRepository;
 import com.final_prog3.foodstore_backend.entities.Usuario;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@Transactional
 public class PedidoServiceImp implements PedidoService {
 
     private final PedidoRepository pedidoRepository;

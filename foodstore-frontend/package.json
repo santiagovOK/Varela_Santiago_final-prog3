@@ -6,13 +6,15 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "dev:all": "concurrently \"npm run dev\" \"cd ../foodstore-backend && ./gradlew bootRun\""
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^25.5.2",
+    "concurrently": "^10.0.3",
     "ts-node": "^10.9.2",
     "typescript": "^6.0.2",
     "vite": "^8.0.8"
