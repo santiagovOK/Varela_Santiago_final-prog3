@@ -22,43 +22,39 @@ El estado inicial de ambas partes del proyecto provienen de sus repositorios bas
 - **Actualizar `vite.config.ts`:** Añadir las nuevas páginas en `build.rollupOptions.input` para que Vite las reconozca al compilar.
 
 ### Paso 2: Módulo de Autenticación y Seguridad
-- **Login y Registro (`pages/auth`):**
-  - Implementar las llamadas fetch a `/api/usuarios/login` y `/api/usuarios/register`.
-  - Guardar la respuesta (ID usuario, nombre, email, rol) en el `localStorage`.
-- **Protección de Rutas (Frontend):**
-  - Crear una función de utilidad en `utils/auth.ts` que valide si hay sesión. 
-  - En los scripts de `admin/`, verificar que `rol === 'ADMIN'`. Si no lo es, redirigir a login.
+- **Registro (`pages/auth/registro`):**
+  - **UI/CSS:** Estilizar el formulario de registro (`registro.html`) replicando la estética del proyecto.
+  - **Lógica:** Implementar `fetch` a `/api/usuarios/register`, validar campos y auto-loguear al usuario.
+- **Login (`pages/auth/login`):**
+  - **Lógica:** Implementar `fetch` a `/api/usuarios/login` y persistir la sesión en `localStorage`.
+- **Protección de Rutas (Guard):**
+  - Mantener la función central en `main.ts` y redirigir correctamente según el rol (`ADMIN` a `/admin/home` y `USUARIO` a `/client/home`).
 
-### Paso 3: Módulo Cliente - Catálogo y Carrito
+### Paso 3: Módulo Cliente - Catálogo y Carrito (Desarrollo UI y Lógica)
 - **Home de Tienda (`store/home`):**
-  - Hacer GET a `/api/categorias` y `/api/productos`.
-  - Renderizar dinámicamente las cards mediante manipulación del DOM.
-  - Implementar lógica de búsqueda y filtrado por categoría o texto.
+  - **UI/CSS:** Desarrollar la maqueta HTML/CSS para el catálogo, el sidebar y los filtros.
+  - **Lógica:** Hacer GET a `/api/categorias` y `/api/productos`. Renderizar dinámicamente las cards.
 - **Detalle de Producto (`store/productDetail`):**
-  - Leer el ID del producto desde la URL. Hacer GET de ese producto específico.
-  - Validar disponibilidad y stock para habilitar el botón de "Agregar al carrito".
+  - **UI/CSS:** Diseñar la vista de detalle del producto.
+  - **Lógica:** Leer el ID de la URL y hacer GET específico. Botón "Agregar al carrito" con validación de stock.
 - **Carrito de Compras (`store/cart`):**
-  - Lógica persistente: Guardar y leer el arreglo de ítems en el `localStorage`.
-  - Interfaz para sumar/restar cantidades validando el stock.
-  - Botón "Confirmar Compra" que tome el carrito, el ID del usuario en sesión y arme el payload para enviar un `POST /api/pedidos`.
-  - Limpiar el carrito local tras un éxito.
+  - **UI/CSS:** Maquetar la tabla de productos, modal de checkout y resumen de compra.
+  - **Lógica:** Operar el `localStorage`, validar stock, y hacer POST a `/api/pedidos` al confirmar la compra.
 
-### Paso 4: Módulo Cliente - Mis Pedidos
+### Paso 4: Módulo Cliente - Mis Pedidos (Desarrollo UI y Lógica)
 - **Mis Pedidos (`client/orders`):**
-  - Obtener los pedidos asociados al usuario en sesión (`GET /api/pedidos/usuario/{id}`).
-  - Renderizar una lista con el estado de cada pedido y el desglose de productos/costos (implementar un Modal nativo HTML/CSS).
+  - **UI/CSS:** Diseñar la vista de tarjetas de historial de compras y el modal de detalle del pedido.
+  - **Lógica:** Hacer GET a `/api/pedidos/usuario/{id}`. Renderizar estados, productos y cálculos totales.
 
-### Paso 5: Panel de Administración (Admin)
-- **Dashboard Admin (`admin/home`):** Renderizar contadores (total de productos, pedidos pendientes, etc.).
+### Paso 5: Panel de Administración (Desarrollo UI y Lógica)
+- **Dashboard Admin (`admin/home`):**
+  - **UI/CSS & Lógica:** Renderizar tarjetas con contadores estadísticos de la BD.
 - **Categorías (`admin/categories`):**
-  - Tabla que consuma `/api/categorias`.
-  - Modales para formulario de Creación y Edición (`POST` y `PUT`).
-  - Lógica para "Eliminar" usando el endpoint de baja lógica.
+  - **UI/CSS & Lógica:** Diseñar tabla y modales. Implementar CRUD consumiendo la API.
 - **Productos (`admin/products`):**
-  - Similar a categorías, pero en el formulario incluir un `<select>` populado con las categorías reales desde el backend.
+  - **UI/CSS & Lógica:** Diseñar tabla y modales. Implementar CRUD con `<select>` de categorías.
 - **Gestión de Pedidos (`admin/orders`):**
-  - Obtener TODOS los pedidos. Renderizar tabla/listado.
-  - Agregar un `<select>` a cada fila que permita al administrador cambiar el estado del pedido mediante `PATCH /api/pedidos/{id}/status`.
+  - **UI/CSS & Lógica:** Visualizar TODOS los pedidos. Implementar `<select>` para que el admin cambie el estado mediante PATCH.
 
 ---
 
@@ -92,3 +88,23 @@ A continuación, se detalla la estructura principal del proyecto, remarcando **q
             ├── products/              <-- (FALTANTE) Pantalla nueva: Administrar productos (CRUD con selector dinámico de categoría).
             └── orders/                <-- (FALTANTE) Pantalla nueva: Visualizar lista maestra de pedidos y selector para cambio de estado.
 ```
+---
+
+## Flujo de redirección solicitado
+
+El sistema de redirección del Frontend funciona como un control de acceso de dos niveles para asegurar que las áreas de la aplicación respeten los roles definidos en las consignas (`ADMIN` y `USUARIO`):
+
+1. **Momento del Login (Distribución inicial):**
+   - Al enviar el formulario exitosamente a `/api/usuarios/login`, el backend responde con los datos del usuario, incluyendo su `rol`.
+   - El script `login.ts` almacena esta sesión de manera local y redirige al usuario según corresponda:
+     - Si el rol es `ADMIN`, redirige al panel administrativo: `/src/pages/admin/home/home.html`.
+     - Si el rol es `USUARIO`, redirige a la vista principal de la tienda/cliente: `/src/pages/client/home/home.html`.
+
+2. **Route Guard o Protección de Rutas (Seguridad continua):**
+   - El archivo central `main.ts` ejecuta una matriz de seguridad (`runRouteGuard`) en cada recarga de página.
+   - Detecta si la ruta actual (pathname) pertenece a un prefijo protegido:
+     - **Rutas `/admin/`:** Exigen estrictamente el rol `ADMIN`. Si un `USUARIO` intenta ingresar a estas rutas manipulando la URL manualmente, el guardián bloquea el acceso y lo redirige hacia su inicio (`/src/pages/client/home/home.html`).
+     - **Rutas `/client/`:** Exigen el rol `USUARIO`. Si un `ADMIN` intenta acceder, es expulsado de regreso al dashboard de administración.
+     - **Sesión ausente:** Si cualquier usuario que no haya iniciado sesión intenta entrar a una zona protegida, es redirigido obligatoriamente a `/src/pages/auth/login/login.html`.
+
+Este flujo garantiza una separación rigurosa entre el catálogo comercial y el panel de administración, delegando el control de vistas de forma robusta y cumpliendo con las especificaciones del TPI.
