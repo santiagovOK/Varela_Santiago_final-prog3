@@ -67,8 +67,10 @@ form.addEventListener("submit", async (event: SubmitEvent) => {
       return;
     }
 
-    console.log("[login] Redireccionando a home de client");
-    navigate("/src/pages/client/home/home.html");
+    // TPI: Ahora la redirección de cliente es directamente al catálogo de la tienda (en el parcial era distinto)
+
+    console.log("[login] Redireccionando a catalogo de cliente");
+    navigate("/src/pages/store/home/home.html");
   } catch (error) {
     console.error("[login] Error en login:", error);
     alert("Error de conexión con el servidor.");

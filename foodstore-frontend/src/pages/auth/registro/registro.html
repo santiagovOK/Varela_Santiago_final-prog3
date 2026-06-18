@@ -1,49 +1,96 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Registro | Food Store</title>
-  <link rel="stylesheet" href="../../../styles.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro | Food Store</title>
+    <link rel="stylesheet" href="../../../styles.css">
+    <link rel="stylesheet" href="../login/login.css">
 </head>
 <body>
-  <main>
-    <h1>Crear cuenta</h1>
+    <main class="login">
+        <section class="login__card" aria-labelledby="login-title">
+            <header class="login__header">
+                <h1 id="login-title">SuperFood</h1>
+                <p class="login__subtitle">Registro</p>
+            </header>
 
-    <form id="registro-form">
-      <div>
-        <label for="email">Email</label>
-        <input
-          id="email"
-          name="email"
-          type="email"
-          placeholder="nombre@correo.com"
-          required
-          autocomplete="email"
-        />
-      </div>
+            <form id="registro-form" class="login__form" action="#" method="post">
+                <fieldset class="login__fields">
+                    <div class="login__field-group">
+                        <label class="login__label" for="nombre">Nombre</label>
+                        <input
+                            class="login__input"
+                            type="text"
+                            id="nombre"
+                            name="nombre"
+                            placeholder="Ej: Juan"
+                            required
+                        >
+                    </div>
 
-      <div>
-        <label for="password">Contraseña</label>
-        <input
-          id="password"
-          name="password"
-          type="password"
-          minlength="6"
-          required
-          autocomplete="new-password"
-        />
-      </div>
+                    <div class="login__field-group">
+                        <label class="login__label" for="apellido">Apellido</label>
+                        <input
+                            class="login__input"
+                            type="text"
+                            id="apellido"
+                            name="apellido"
+                            placeholder="Ej: Pérez"
+                            required
+                        >
+                    </div>
 
-      <button type="submit">Registrarme</button>
-    </form>
+                    <div class="login__field-group">
+                        <label class="login__label" for="email">Email</label>
+                        <input
+                            class="login__input"
+                            type="email"
+                            id="email"
+                            name="email"
+                            placeholder="ejemplo@correo.com"
+                            required
+                        >
+                    </div>
 
-    <p>
-      ¿Ya tenés cuenta?
-      <a href="../login/login.html">Ir al login</a>
-    </p>
-  </main>
+                    <div class="login__field-group">
+                        <label class="login__label" for="celular">Celular (Opcional)</label>
+                        <input
+                            class="login__input"
+                            type="tel"
+                            id="celular"
+                            name="celular"
+                            placeholder="Ej: 1123456789"
+                        >
+                    </div>
+            
+                    <div class="login__field-group">
+                        <label class="login__label" for="password">Contraseña</label>
+                        <input
+                            class="login__input"
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="Mínimo 6 caracteres"
+                            minlength="6"
+                            required
+                        >
+                    </div>
+                </fieldset>
+                
+                <div class="login__actions">
+                    <button class="login__button" type="submit">Registrarse</button>
+                </div>
+            </form>
 
-  <script type="module" src="./registro.ts"></script>
+            <footer class="login__footer">
+                <p class="login__signup-text">
+                    ¿Ya tienes cuenta? <a class="login__signup-link" href="../login/login.html">Inicia sesión</a>
+                </p>
+            </footer>
+        </section>
+    </main>
+
+    <script type="module" src="./registro.ts"></script>
 </body>
 </html>

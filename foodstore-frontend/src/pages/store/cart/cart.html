@@ -1,84 +1,104 @@
 <!DOCTYPE html>
 <html lang="es">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Food Store | Carrito</title>
-		<link rel="stylesheet" href="../../../styles.css" /> 
-		<link rel="stylesheet" href="./cart.css" />
-	</head>
-	<body class="store-cart">
-		<header class="store-cart__topbar store-cart__topbar--row">
-			<div class="store-cart__brand">
-				<h1 class="store-cart__logo">FoodStore</h1>
-			</div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Food Store | Carrito</title>
+  <link rel="stylesheet" href="../../../styles.css" />
+  <link rel="stylesheet" href="../home/home.css" />
+  <link rel="stylesheet" href="./cart.css" />
+</head>
+<body class="store-cart">
+  <header class="store-home__topbar">
+    <div class="store-home__brand">
+      <h1 class="store-home__logo">🍕 Food Store</h1>
+    </div>
 
-			<nav class="store-cart__menu" aria-label="Navegacion principal">
-				<ul class="store-cart__menu-list store-cart__menu-list--row">
-					<li class="store-cart__menu-item">
-						<a class="store-cart__menu-link" href="../home/home.html">Catalogo</a>
-					</li>
-					<li class="store-cart__menu-item">
-						<a class="store-cart__menu-link store-cart__menu-link--active" href="./cart.html" aria-current="page">
-							Carrito
-							<span class="store-cart__cart-count" id="cart-count">0</span>
-						</a>
-					</li>
-				</ul>
-			</nav>
-		</header>
+    <nav class="store-home__menu" aria-label="Navegacion principal">
+      <ul class="store-home__menu-list">
+        <li class="store-home__menu-item"><a class="store-home__menu-link" href="../home/home.html">Inicio</a></li>
+        <li class="store-home__menu-item"><a class="store-home__menu-link" href="../../client/orders/orders.html">Mis Pedidos</a></li>
+        <li class="store-home__menu-item" id="admin-link-container" style="display:none;"><a class="store-home__menu-link" href="../../admin/home/home.html">Administración</a></li>
+        <li class="store-home__menu-item">
+          <a class="store-home__menu-link store-home__menu-link--active" href="./cart.html">
+            🛒 Cart <span class="store-home__cart-badge" id="cart-count">0</span>
+          </a>
+        </li>
+        <li class="store-home__menu-item"><span class="store-home__user-name" id="user-name-display">Usuario</span></li>
+        <li class="store-home__menu-item"><button class="store-home__logout-btn" id="logout-btn">Cerrar Sesión</button></li>
+      </ul>
+    </nav>
+  </header>
 
-		<main class="store-cart__main" aria-labelledby="cart-title">
-			<header class="store-cart__header">
-				<h2 class="store-cart__title" id="cart-title">Mi Carrito</h2>
-			</header>
+  <main class="cart-layout">
+    <h2 class="cart-layout__title">Tu Carrito</h2>
 
-			<section class="store-cart__content store-cart__content--row" id="cart-content" aria-label="Contenido del carrito">
-				<section class="cart-items" id="cart-items-container" aria-label="Productos agregados">
-					<ul class="cart-items__list" id="cart-items-list">
-						<!-- Los items se cargaran dinamicamente -->
-					</ul>
-				</section>
+    <!-- Estado vacío -->
+    <section id="cart-empty" class="cart-empty" hidden>
+      <p>Tu carrito está vacío.</p>
+      <a class="cart-empty__link" href="../home/home.html">Volver a la tienda</a>
+    </section>
 
-				<section class="store-cart__empty" id="cart-empty" aria-label="Carrito vacio" hidden>
-					<div class="store-cart__empty-card">
-						<p class="store-cart__empty-icon" aria-hidden="true">🛒</p>
-						<p class="store-cart__empty-text">Tu carrito esta vacio.</p>
-						<a class="store-cart__empty-link" href="../home/home.html">Ver catalogo</a>
-					</div>
-				</section>
+    <!-- Estado con productos -->
+    <div id="cart-items-container" class="cart-container" hidden>
+      
+      <section class="cart-container__list-section">
+        <div class="cart-container__header">
+          <h3>Productos</h3>
+          <button class="cart-container__clear-btn" id="clear-cart-btn">Vaciar carrito</button>
+        </div>
+        <ul id="cart-items-list" class="cart-items-list">
+          <!-- Items generados por TS -->
+        </ul>
+      </section>
 
-				<aside class="cart-summary" aria-label="Resumen de compra">
-					<h3 class="cart-summary__title">Resumen</h3>
+      <aside class="cart-container__summary-section">
+        <div class="cart-summary">
+          <h3 class="cart-summary__title">Resumen de Compra</h3>
+          
+          <div class="cart-summary__row">
+            <span>Subtotal:</span>
+            <span id="cart-subtotal" class="cart-summary__val">$0.00</span>
+          </div>
+          
+          <div class="cart-summary__row">
+            <span>Envío:</span>
+            <span class="cart-summary__val">Gratis</span>
+          </div>
 
-					<div class="cart-summary__row cart-summary__row--subtotal">
-						<span class="cart-summary__label">Subtotal</span>
-						<span class="cart-summary__value" id="cart-subtotal">$0</span>
-					</div>
+          <div class="cart-summary__row">
+            <span>Dirección:</span>
+            <span id="cart-address" class="cart-summary__val">Mi Dirección 1234</span>
+          </div>
 
-					<div class="cart-summary__row cart-summary__row--total">
-						<span class="cart-summary__label cart-summary__label--total">Total</span>
-						<strong class="cart-summary__value cart-summary__value--total" id="cart-total">$0</strong>
-					</div>
+          <div class="cart-summary__row">
+            <span>Teléfono:</span>
+            <span id="cart-phone" class="cart-summary__val">No especificado</span>
+          </div>
 
-					<div class="cart-summary__row" style="margin-top: 1rem; flex-direction: column; align-items: stretch; gap: 0.5rem;">
-						<label for="forma-pago" class="cart-summary__label">Forma de Pago:</label>
-						<select id="forma-pago" style="padding: 0.5rem; border: 1px solid var(--clr-surface-border); border-radius: 4px; background: var(--clr-surface-bg); color: var(--clr-text-main);">
-							<option value="EFECTIVO">Efectivo</option>
-							<option value="MERCADOPAGO">MercadoPago</option>
-							<option value="TRANSFERENCIA">Transferencia</option>
-							<option value="TARJETA">Tarjeta</option>
-						</select>
-					</div>
+          <div class="cart-summary__divider"></div>
 
-					<button class="cart-summary__checkout-btn" type="button" id="checkout-btn">Finalizar compra</button>
-					<p class="cart-summary__note" id="checkout-feedback" style="display: none; color: green; font-weight: bold; text-align: center;">Pedido realizado exitosamente.</p>
+          <div class="cart-summary__row cart-summary__row--total">
+            <span>Total:</span>
+            <span id="cart-total" class="cart-summary__val">$0.00</span>
+          </div>
 
-					<button class="cart-summary__clear-btn" type="button" id="clear-cart-btn">Vaciar carrito</button>
-				</aside>
-			</section>
-		</main>
+          <div class="cart-summary__payment">
+            <label for="forma-pago">Forma de pago</label>
+            <select id="forma-pago" class="cart-summary__select">
+              <option value="Efectivo">Efectivo</option>
+              <option value="MercadoPago">MercadoPago</option>
+            </select>
+          </div>
 
-		<script type="module" src="./cart.ts"></script>
-	</body>
+          <button id="checkout-btn" class="cart-summary__checkout-btn">Confirmar Pedido</button>
+          <p id="checkout-feedback" class="cart-summary__feedback" style="display:none; color: green; font-weight: bold; text-align: center; margin-top: 10px;">¡Pedido confirmado con éxito!</p>
+        </div>
+      </aside>
+
+    </div>
+  </main>
+
+  <script type="module" src="./cart.ts"></script>
+</body>
 </html>

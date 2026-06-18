@@ -6,7 +6,7 @@ import { navigate } from "./utils/navigate";
 // Rutas usadas por el guard para redireccionar.
 const LOGIN_PATH = "/src/pages/auth/login/login.html";
 const ADMIN_HOME_PATH = "/src/pages/admin/home/home.html";
-const CLIENT_HOME_PATH = "/src/pages/client/home/home.html";
+const STORE_HOME_PATH = "/src/pages/store/home/home.html";
 
 type ProtectedRoute = {
 	// Prefijo de pathname que identifica una zona protegida.
@@ -17,21 +17,26 @@ type ProtectedRoute = {
 	forbiddenRedirect: string;
 };
 
-// Matriz de autorizacion por prefijo de ruta.
+// Matriz de autorizacion por prefijo de ruta. Ligeramente cambiada en el TPI.
 const protectedRoutes: ProtectedRoute[] = [
 	{
 		routePrefix: "/src/pages/admin/",
-		requiredRole: "ADMIN", // TPI: Cambié estas propiedades en Rol para que sean más claras. Por eso debí modificarlas aquí.
-		forbiddenRedirect: CLIENT_HOME_PATH,
+		requiredRole: "ADMIN",
+		forbiddenRedirect: STORE_HOME_PATH,
 	},
 	{
 		routePrefix: "/src/pages/client/",
-		requiredRole: "USUARIO", // TPI: Cambié estas propiedades en Rol para que sean más claras. Por eso debí modificarlas aquí.
+		requiredRole: "USUARIO",
+		forbiddenRedirect: ADMIN_HOME_PATH,
+	},
+	{
+		routePrefix: "/src/pages/store/",
+		requiredRole: "USUARIO",
 		forbiddenRedirect: ADMIN_HOME_PATH,
 	},
 ];
 
-// Devuelve la primera regla de proteccion que coincide con la ruta actual.
+// Devuelve la primera regla de protección que coincide con la ruta actual.
 const getMatchedProtectedRoute = (pathname: string): ProtectedRoute | undefined => {
 	return protectedRoutes.find((route) => pathname.includes(route.routePrefix));
 };

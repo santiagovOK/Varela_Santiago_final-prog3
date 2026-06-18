@@ -3,45 +3,50 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mis Pedidos | Food Store</title>
+  <title>Food Store | Mis Pedidos</title>
   <link rel="stylesheet" href="../../../styles.css" />
+  <link rel="stylesheet" href="../../store/home/home.css" />
   <link rel="stylesheet" href="./orders.css" />
 </head>
 <body class="client-orders">
-  <header class="client-topbar">
-    <div class="client-topbar__brand">
-      <h1>FoodStore</h1>
+  <header class="store-home__topbar">
+    <div class="store-home__brand">
+      <h1 class="store-home__logo">🍕 Food Store</h1>
     </div>
-    <nav class="client-topbar__menu">
-      <ul class="client-topbar__menu-list">
-        <li><a class="client-topbar__menu-link" href="../../store/home/home.html">Catálogo</a></li>
-        <li><a class="client-topbar__menu-link client-topbar__menu-link--active" href="./orders.html">Mis Pedidos</a></li>
-        <li><button class="client-topbar__logout" id="logout-btn">Cerrar Sesión</button></li>
+
+    <nav class="store-home__menu" aria-label="Navegacion principal">
+      <ul class="store-home__menu-list">
+        <li class="store-home__menu-item"><a class="store-home__menu-link" href="../../store/home/home.html">Inicio</a></li>
+        <li class="store-home__menu-item"><a class="store-home__menu-link store-home__menu-link--active" href="./orders.html">Mis Pedidos</a></li>
+        <li class="store-home__menu-item" id="admin-link-container" style="display:none;"><a class="store-home__menu-link" href="../../admin/home/home.html">Administración</a></li>
+        <li class="store-home__menu-item">
+          <a class="store-home__menu-link" href="../../store/cart/cart.html">
+            🛒 Cart <span class="store-home__cart-badge" id="cart-count">0</span>
+          </a>
+        </li>
+        <li class="store-home__menu-item"><span class="store-home__user-name" id="user-name-display">Usuario</span></li>
+        <li class="store-home__menu-item"><button class="store-home__logout-btn" id="logout-btn">Cerrar Sesión</button></li>
       </ul>
     </nav>
   </header>
-  
-  <main class="orders__container">
-    <header class="orders__header">
-      <h2 class="orders__title">Historial de Pedidos</h2>
+
+  <main class="orders-layout">
+    <header class="orders-layout__header">
+      <h2 class="orders-layout__title">Historial de Pedidos</h2>
     </header>
 
-    <div id="orders-content">
-      <p class="orders__message">Cargando tus pedidos...</p>
-    </div>
+    <section id="orders-content" class="orders-layout__content">
+      <!-- TPI: Pedidos renderizados por TS -->
+    </section>
   </main>
 
-  <!-- TPI: Modal Nativo para el detalle del pedido, que es una estrategia para evitar librerías externas para esta parte -->
-
   <dialog class="order-modal" id="order-modal">
-    <div class="order-modal__content">
-      <header class="order-modal__header">
-        <h3 class="order-modal__title" id="modal-title">Detalle del Pedido</h3>
-        <button class="order-modal__close-btn" id="modal-close-btn">&times;</button>
-      </header>
-      <div class="order-modal__body" id="modal-body">
-        <!-- TPI: Detalles insertados dinamicamente -->
-      </div>
+    <div class="order-modal__header">
+      <h3 class="order-modal__title" id="modal-title">Detalle del Pedido</h3>
+      <button class="order-modal__close-btn" id="modal-close-btn" aria-label="Cerrar modal">&times;</button>
+    </div>
+    <div class="order-modal__body" id="modal-body">
+      <!-- TPI: Detalles renderizados por TS -->
     </div>
   </dialog>
 

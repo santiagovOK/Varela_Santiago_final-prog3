@@ -3,126 +3,133 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100vh; /* Hace que el cuerpo ocupe toda la altura de la ventana */
-}
-
-header {
-    font-size: 2.5rem;
-    margin-bottom: 5rem;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #ff8a65, #ff5722);
+    font-family: Arial, sans-serif;
 }
 
 .login {
     background-color: var(--color-blanco);
-    padding: 2rem;
-    border-radius: 0.5rem;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 3rem 2.5rem;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
     width: 100%;
-    max-width: 300px; /* Limita el ancho máximo del formulario */
+    max-width: 340px;
 }
 
 .login__card {
     display: flex;
     flex-direction: column;
-    align-items: center;
-}
-
-#login-title {
-    text-transform: uppercase;
-    font-size: 2.4rem;
-    margin-bottom: 1rem;
-    letter-spacing: 0.08em;
-    line-height: 1.2;
+    align-items: stretch;
 }
 
 .login__header {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    font-size: 2rem;
-    margin-bottom: 2rem;
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+#login-title {
     color: var(--color-primario);
-/*     text-align: center podría ir aquí, pero es innecesario al estar usando flex */
+    font-size: 2.2rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
 }
 
 .login__subtitle {
-    font-size: 1.6rem;
-    margin-bottom: 1rem;
+    font-size: 1.4rem;
     color: var(--color-texto);
-    line-height: 1.4;
+    font-weight: 600;
 }
 
-.login__form    {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-bottom: 2rem;
-    width: 100%; /* respecto al contenedor padre, que es .login, para que el formulario ocupe todo el ancho disponible y así los campos se ajusten a ese ancho. */
-}
-
-.login__fields {
+.login__form {
     display: flex;
     flex-direction: column;
     width: 100%;
-    border: none;   /* Elimino el borde por defecto del fieldset para que no afecte al diseño. */
+}
+
+.login__fields {
+    border: none;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
 }
 
 .login__field-group {
-    margin-bottom: 1.5rem;
+    display: flex;
+    flex-direction: column;
     width: 100%;
 }
 
 .login__label {
-    display: flex;
-    margin-bottom: 0.5rem;
-    font-size: 1.4rem;
+    font-size: 1.2rem;
     font-weight: bold;
+    color: var(--color-texto);
+    margin-bottom: 0.5rem;
 }
 
 .login__input {
     width: 100%;
-    padding: 0.8rem;
+    padding: 1rem;
     border: 1px solid var(--color-borde);
-    border-radius: 0.5rem;
-    font-size: 1.4rem;
+    border-radius: 4px;
+    font-size: 1.3rem;
+    color: var(--color-texto);
+    background-color: var(--color-blanco);
+    transition: border-color 0.2s;
 }
 
 .login__input:focus {
     border-color: var(--color-focus);
-    outline: none; /* Elimina el borde de enfoque por defecto para usar solo el cambio de color. */
+    outline: none;
+}
+
+.login__input::placeholder {
+    color: var(--color-texto-mutado);
 }
 
 .login__actions {
-    display: flex;
-    justify-content: center;
     width: 100%;
 }
 
 .login__button {
-    padding: 0.8rem 1.5rem;
+    width: 100%;
+    padding: 1rem;
     border: none;
-    border-radius: 0.5rem;
+    border-radius: 4px;
     font-size: 1.4rem;
+    font-weight: bold;
     cursor: pointer;
-    width: 100%; /* Hace que el botón ocupe todo el ancho del contenedor, respecto al padre */ 
-}
-
-.login__button--primary {
     background-color: var(--color-primario);
     color: var(--color-blanco);
+    transition: background-color 0.2s;
 }
 
-.login__button--primary:hover {
+.login__button:hover {
     background-color: var(--color-focus);
+}
+
+.login__footer {
+    margin-top: 1.5rem;
+    text-align: center;
 }
 
 .login__signup-text {
     font-size: 1.2rem;
     color: var(--color-texto);
-    line-height: 1.5;
-
+    margin-bottom: 1rem;
 }
 
 .login__signup-link {
-    font-size: 1.2rem;
     color: var(--color-primario);
+    text-decoration: underline;
+    font-weight: normal;
+}
+
+.login__test-accounts {
+    margin-top: 2rem;
+    font-size: 1rem;
+    color: var(--color-texto-mutado);
+    text-align: left;
+    line-height: 1.5;
 }

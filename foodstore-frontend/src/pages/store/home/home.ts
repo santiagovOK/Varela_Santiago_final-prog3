@@ -1,4 +1,6 @@
 import { getCart, saveCart, type CartMap } from "../../../utils/localStorage" // Funciones para manejar el carrito en localStorage
+import { getUSer, removeUser } from "../../../utils/localStorage"
+import { navigate } from "../../../utils/navigate"
 import type { Product } from "../../../types/product";
 import type { ICategory } from "../../../types/categoria";
 
@@ -10,12 +12,30 @@ const searchInput = document.getElementById("search-input") as HTMLInputElement 
 const searchFeedback = document.getElementById("search-feedback") as HTMLParagraphElement | null;
 const categoryList = document.getElementById("category-list") as HTMLUListElement | null;
 const cartCount = document.getElementById("cart-count") as HTMLSpanElement | null;
+const userNameDisplay = document.getElementById("user-name-display") as HTMLSpanElement | null;
+const adminLinkContainer = document.getElementById("admin-link-container") as HTMLLIElement | null;
+const logoutBtn = document.getElementById("logout-btn") as HTMLButtonElement | null;
 
 // Agrego un Guard clause (validación) por si falta algún nodo clave del HTML. Se detiene la ejecución y se lanza un error para evitar fallos silenciosos posteriores.
 // Parecido a la idea de `main.ts` de validación de rutas, pero aplicado a la integridad del DOM específico de esta vista.
-if (!productsList || !searchInput || !searchFeedback || !categoryList || !cartCount) {
+if (!productsList || !searchInput || !searchFeedback || !categoryList || !cartCount || !userNameDisplay || !logoutBtn) {
   throw new Error("Faltan elementos del DOM en la vista store/home.");
 }
+
+// Session
+const rawUser = getUSer();
+if (rawUser) {
+    const user = JSON.parse(rawUser);
+    userNameDisplay.textContent = user.nombre;
+    if (user.rol === "ADMIN" && adminLinkContainer) {
+        adminLinkContainer.style.display = "block";
+    }
+}
+
+logoutBtn.addEventListener("click", () => {
+    removeUser();
+    navigate("../auth/login/login.html");
+});
 
 // Variables globales para datos desde el backend
 let baseProducts: Product[] = [];
@@ -137,19 +157,14 @@ const createProductCardTemplate = (product: Product): string => {
 
   return [
     '<li class="store-home__product-item">',
-    '  <article class="product-card product-card--col">',
-    '    <figure class="product-card__media">',
-    `      <img class="product-card__image" src="${imageSrc}" alt="${product.nombre}" />`,
-    "    </figure>",
-    '    <div class="product-card__body product-card__body--col">',
-    `      <p class="product-card__category">${firstCategoryName}</p>`,
-    `      <h3 class="product-card__title">${product.nombre}</h3>`,
-    `      <p class="product-card__description">${product.descripcion}</p>`,
-    "    </div>",
-    '    <footer class="product-card__footer product-card__footer--row" style="flex-wrap: wrap; gap: 0.5rem; justify-content: space-between;">',
-    `      <p class="product-card__price" style="width: 100%;">${formatPrice(product.precio)}</p>`,
-    `      <button class="product-card__add-btn" type="button" data-product-id="${product.id}" style="flex: 1;">Agregar</button>`,
-    `      <a class="store-home__menu-link" href="../productDetail/productDetail.html?id=${product.id}" style="flex: 1; text-align: center; border: 1px solid var(--clr-primary); border-radius: 4px; padding: 0.5rem; text-decoration: none; color: var(--clr-primary);">Ver Detalle</a>`,
+    '  <article class="product-card">',
+    `    <img class="product-card__image" src="${imageSrc}" alt="${product.nombre}" />`,
+    `    <p class="product-card__category">${firstCategoryName}</p>`,
+    `    <h3 class="product-card__title">${product.nombre}</h3>`,
+    `    <p class="product-card__description">${product.descripcion}</p>`,
+    '    <footer class="product-card__footer">',
+    `      <p class="product-card__price">${formatPrice(product.precio)}</p>`,
+    `      <button class="product-card__add-btn" type="button" data-product-id="${product.id}">Disponible</button>`,
     "    </footer>",
     "  </article>",
     "</li>",
@@ -177,6 +192,7 @@ const renderCategories = (): void => {
   const allBtnHtml = `
     <li class="store-home__category-item">
       <button class="store-home__category-btn ${state.selectedCategory === 'all' ? 'store-home__category-btn--active' : ''}" type="button" data-category="all">
+        <span style="display:inline-block; width:12px; height:12px; background:#ddd; border-radius:2px;"></span>
         Todos los productos
       </button>
     </li>
@@ -185,6 +201,7 @@ const renderCategories = (): void => {
   const categoriesHtml = baseCategories.map(cat => `
     <li class="store-home__category-item">
       <button class="store-home__category-btn ${state.selectedCategory === cat.nombre ? 'store-home__category-btn--active' : ''}" type="button" data-category="${cat.nombre}">
+        <span style="display:inline-block; width:12px; height:12px; background:#ffb4a2; border-radius:2px;"></span>
         ${cat.nombre}
       </button>
     </li>

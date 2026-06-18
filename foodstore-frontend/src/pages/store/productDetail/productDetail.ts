@@ -1,4 +1,5 @@
-import { getCart, saveCart, type CartMap } from "../../../utils/localStorage";
+import { getCart, saveCart, getUSer, removeUser, type CartMap } from "../../../utils/localStorage";
+import { navigate } from "../../../utils/navigate";
 import type { Product } from "../../../types/product";
 
 // TPI: Creación de productDetail.ts para implementar el funcionamiento dinámico del Detalle del Producto, solicitado en las consignas del TPI y en la estructura del proyecto
@@ -8,6 +9,29 @@ import type { Product } from "../../../types/product";
 // Obtenemos los contenedores principales donde inyectaremos la informacion de detalle y el contador del carrito.
 const detailContainer = document.getElementById("detail-container") as HTMLElement;
 const cartCount = document.getElementById("cart-count") as HTMLSpanElement;
+
+const userNameDisplay = document.getElementById("user-name-display") as HTMLSpanElement | null;
+const adminLinkContainer = document.getElementById("admin-link-container") as HTMLLIElement | null;
+const logoutBtn = document.getElementById("logout-btn") as HTMLButtonElement | null;
+
+if (!detailContainer || !cartCount || !userNameDisplay || !logoutBtn) {
+  throw new Error("Faltan elementos del DOM en la vista store/productDetail.");
+}
+
+// Session
+const rawUser = getUSer();
+if (rawUser) {
+    const user = JSON.parse(rawUser);
+    userNameDisplay.textContent = user.nombre;
+    if (user.rol === "ADMIN" && adminLinkContainer) {
+        adminLinkContainer.style.display = "block";
+    }
+}
+
+logoutBtn.addEventListener("click", () => {
+    removeUser();
+    navigate("../auth/login/login.html");
+});
 
 // Utilizamos URLSearchParams para extraer el parámetro 'id' de la URL actual
 // Esto nos indica qué producto se debe ir a buscar al backend.
@@ -50,7 +74,7 @@ const renderError = (message: string) => {
     <div class="product-detail__message">
       <h2>Error</h2>
       <p>${message}</p>
-      <a class="product-detail__message-link" href="../home/home.html">Volver al catalogo</a>
+      <a class="product-detail__back-link" href="../home/home.html">Volver al catalogo</a>
     </div>
   `;
 };
@@ -69,12 +93,12 @@ const renderProduct = (product: Product) => {
   
   // Inyectamos el HTML usando template strings
   detailContainer.innerHTML = `
-    <a class="product-detail__back-link" href="../home/home.html">&larr; Volver al catalogo</a>
+    <a class="product-detail__back-link" href="../home/home.html">&larr; Volver al catálogo</a>
     
     <article class="product-detail__card">
-      <figure class="product-detail__media">
+      <div class="product-detail__media">
         <img class="product-detail__image" src="${imageSrc}" alt="${product.nombre}" />
-      </figure>
+      </div>
       
       <div class="product-detail__info">
         <h1 class="product-detail__title">${product.nombre}</h1>

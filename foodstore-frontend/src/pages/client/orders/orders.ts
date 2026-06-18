@@ -1,5 +1,5 @@
 import { checkAuhtUser } from "../../../utils/auth";
-import { getUSer } from "../../../utils/localStorage";
+import { getUSer, getCart } from "../../../utils/localStorage";
 import type { IUser } from "../../../types/IUser";
 import type { PedidoDto } from "../../../types/pedido";
 
@@ -14,6 +14,31 @@ const orderModal = document.getElementById("order-modal") as HTMLDialogElement;
 const modalTitle = document.getElementById("modal-title") as HTMLHeadingElement;
 const modalBody = document.getElementById("modal-body") as HTMLElement;
 const modalCloseBtn = document.getElementById("modal-close-btn") as HTMLButtonElement;
+
+const userNameDisplay = document.getElementById("user-name-display") as HTMLSpanElement | null;
+const adminLinkContainer = document.getElementById("admin-link-container") as HTMLLIElement | null;
+const cartCount = document.getElementById("cart-count") as HTMLSpanElement | null;
+
+if (!ordersContent || !orderModal || !modalTitle || !modalBody || !modalCloseBtn || !userNameDisplay || !logoutBtn) {
+  throw new Error("Faltan elementos del DOM en la vista client/orders.");
+}
+
+// Session
+const rawUser = getUSer();
+if (rawUser) {
+    const user = JSON.parse(rawUser);
+    userNameDisplay.textContent = user.nombre;
+    if (user.rol === "ADMIN" && adminLinkContainer) {
+        adminLinkContainer.style.display = "block";
+    }
+}
+
+// Helper para calcular unidades en carrito
+if (cartCount) {
+    const cart = getCart();
+    const totalUnits = Object.values(cart).reduce((acc, qty) => acc + qty, 0);
+    cartCount.textContent = String(totalUnits);
+}
 
 // Variables globales para datos
 let userOrders: PedidoDto[] = [];

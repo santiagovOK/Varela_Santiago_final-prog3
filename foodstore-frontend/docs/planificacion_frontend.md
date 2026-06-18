@@ -100,13 +100,13 @@ El sistema de redirección del Frontend funciona como un control de acceso de do
    - Al enviar el formulario exitosamente a `/api/usuarios/login`, el backend responde con los datos del usuario, incluyendo su `rol`.
    - El script `login.ts` almacena esta sesión de manera local y redirige al usuario según corresponda:
      - Si el rol es `ADMIN`, redirige al panel administrativo: `/src/pages/admin/home/home.html`.
-     - Si el rol es `USUARIO`, redirige a la vista principal de la tienda/cliente: `/src/pages/client/home/home.html`.
+     - Si el rol es `USUARIO`, redirige a la vista principal de la tienda/catálogo: `/src/pages/store/home/home.html` (el cliente ve el catálogo directamente al loguearse).
 
 2. **Route Guard o Protección de Rutas (Seguridad continua):**
    - El archivo central `main.ts` ejecuta una matriz de seguridad (`runRouteGuard`) en cada recarga de página.
    - Detecta si la ruta actual (pathname) pertenece a un prefijo protegido:
-     - **Rutas `/admin/`:** Exigen estrictamente el rol `ADMIN`. Si un `USUARIO` intenta ingresar a estas rutas manipulando la URL manualmente, el guardián bloquea el acceso y lo redirige hacia su inicio (`/src/pages/client/home/home.html`).
-     - **Rutas `/client/`:** Exigen el rol `USUARIO`. Si un `ADMIN` intenta acceder, es expulsado de regreso al dashboard de administración.
+     - **Rutas `/admin/`:** Exigen estrictamente el rol `ADMIN`. Si un `USUARIO` intenta ingresar a estas rutas manipulando la URL manualmente, el guardián bloquea el acceso y lo redirige hacia su catálogo (`/src/pages/store/home/home.html`).
+     - **Rutas `/client/` y `/store/`:** Exigen el rol `USUARIO`. Si un `ADMIN` intenta acceder, es expulsado de regreso al dashboard de administración.
      - **Sesión ausente:** Si cualquier usuario que no haya iniciado sesión intenta entrar a una zona protegida, es redirigido obligatoriamente a `/src/pages/auth/login/login.html`.
 
 Este flujo garantiza una separación rigurosa entre el catálogo comercial y el panel de administración, delegando el control de vistas de forma robusta y cumpliendo con las especificaciones del TPI.

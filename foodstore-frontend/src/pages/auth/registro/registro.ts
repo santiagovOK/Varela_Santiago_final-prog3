@@ -8,10 +8,12 @@ const form = document.getElementById("registro-form") as HTMLFormElement | null;
 const inputEmail = document.getElementById("email") as HTMLInputElement | null;
 const inputPassword = document.getElementById("password") as HTMLInputElement | null;
 const inputNombre = document.getElementById("nombre") as HTMLInputElement | null;
+const inputApellido = document.getElementById("apellido") as HTMLInputElement | null;
+const inputCelular = document.getElementById("celular") as HTMLInputElement | null;
 
 // Guard claúsula de seguridad: evita usar addEventListener sobre null.
 // Si el HTML cambia y falta algun elemento requerido, falla temprano con error explicito.
-if (!form || !inputEmail || !inputPassword) {
+if (!form || !inputEmail || !inputPassword || !inputNombre || !inputApellido || !inputCelular) {
   throw new Error("No se encontraron los elementos del formulario de registro.");
 }
 
@@ -28,12 +30,14 @@ form.addEventListener("submit", async (event: SubmitEvent) => {
   // Se conserva la password tal como la ingresa el usuario.
 
   const password = inputPassword.value; // TPI: ahora el password es "hasheado" en el backend
-  const nombre = inputNombre ? inputNombre.value.trim() : "Usuario Nuevo";
+  const nombre = inputNombre.value.trim();
+  const apellido = inputApellido.value.trim();
+  const celular = inputCelular.value.trim();
 
   // Validación minima para no guardar registros vacios.
-  if (!email || !password) {
-    console.log("[registro] Validacion fallida: email o password vacios");
-    alert("Completá email y contraseña.");
+  if (!email || !password || !nombre || !apellido) {
+    console.log("[registro] Validacion fallida: faltan campos obligatorios");
+    alert("Completá todos los campos obligatorios.");
     return;
   }
 
@@ -45,7 +49,7 @@ form.addEventListener("submit", async (event: SubmitEvent) => {
         "Content-Type": "application/json",
       },
       // La consigna pide no elegir rol en UI: se asigna client por defecto. (Lo mapeamos a USUARIO en backend)
-      body: JSON.stringify({ nombre, email, password, rol: "USUARIO" }),
+      body: JSON.stringify({ nombre, apellido, celular, email, password, rol: "USUARIO" }),
     });
 
     if (!response.ok) {

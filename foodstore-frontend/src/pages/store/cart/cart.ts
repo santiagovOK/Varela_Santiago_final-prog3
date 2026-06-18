@@ -1,4 +1,5 @@
-import { getCart, saveCart, clearCart, getUSer } from "../../../utils/localStorage"; // Importamos la función para guardar el carrito en localStorage (desde utils/localStorage.ts), que se va a usar para persistir el estado del carrito entre sesiones.
+import { getCart, saveCart, clearCart, getUSer, removeUser } from "../../../utils/localStorage"; 
+import { navigate } from "../../../utils/navigate";
 import type { Product, CartItem } from "../../../types/product";
 import type { IUser } from "../../../types/IUser";
 
@@ -14,11 +15,34 @@ const clearCartBtn = document.getElementById("clear-cart-btn") as HTMLButtonElem
 const checkoutBtn = document.getElementById("checkout-btn") as HTMLButtonElement | null;
 const formaPagoSelect = document.getElementById("forma-pago") as HTMLSelectElement | null;
 const checkoutFeedback = document.getElementById("checkout-feedback") as HTMLParagraphElement | null;
+const cartPhone = document.getElementById("cart-phone") as HTMLSpanElement | null;
+
+const userNameDisplay = document.getElementById("user-name-display") as HTMLSpanElement | null;
+const adminLinkContainer = document.getElementById("admin-link-container") as HTMLLIElement | null;
+const logoutBtn = document.getElementById("logout-btn") as HTMLButtonElement | null;
 
 // Guard clause para evitar errores silenciosos si cambia el HTML.
-if (!cartItemsList || !cartSubtotal || !cartTotal || !cartItemsContainer || !cartEmpty || !cartCount || !clearCartBtn || !checkoutBtn || !formaPagoSelect) {
+if (!cartItemsList || !cartSubtotal || !cartTotal || !cartItemsContainer || !cartEmpty || !cartCount || !clearCartBtn || !checkoutBtn || !formaPagoSelect || !userNameDisplay || !logoutBtn || !cartPhone) {
   throw new Error("Faltan elementos del DOM en la vista store/cart.");
 }
+
+// Session
+const rawUser = getUSer();
+if (rawUser) {
+    const user: IUser = JSON.parse(rawUser);
+    userNameDisplay.textContent = user.nombre || "Usuario";
+    if (cartPhone) {
+        cartPhone.textContent = user.celular || "No especificado";
+    }
+    if (user.rol === "ADMIN" && adminLinkContainer) {
+        adminLinkContainer.style.display = "block";
+    }
+}
+
+logoutBtn.addEventListener("click", () => {
+    removeUser();
+    navigate("../auth/login/login.html");
+});
 
 // 2. Estado del carrito
 
@@ -135,27 +159,24 @@ const createCartItemTemplate = (item: CartItem): string => {
   const imageSrc = item.imagen && item.imagen.startsWith("http") ? item.imagen : `/images/${item.imagen || 'placeholder.jpg'}`;
 
   return [
-    '<li class="cart-items__item">',
-    '  <article class="cart-product cart-product--row">',
-    '    <div class="cart-product__main cart-product__main--row">',
-    '      <figure class="cart-product__media">',
-    `        <img class="cart-product__image" src="${imageSrc}" alt="${item.nombre}" style="object-fit: contain; background: white;" />`,
-    "      </figure>",
-    '      <div class="cart-product__info cart-product__info--col">',
-    `        <h3 class="cart-product__name">${item.nombre}</h3>`,
-    `        <p class="cart-product__category">${category}</p>`,
-    `        <p class="cart-product__subtotal">Subtotal: ${formatPrice(lineSubtotal)}</p>`,
-    "      </div>",
+    '<li class="cart-product">',
+    '  <div class="cart-product__main">',
+    `    <img class="cart-product__image" src="${imageSrc}" alt="${item.nombre}" />`,
+    '    <div class="cart-product__info">',
+    `      <span class="cart-product__category">${category}</span>`,
+    `      <span class="cart-product__name">${item.nombre}</span>`,
+    `      <span class="cart-product__subtotal">${formatPrice(item.precioUnitario)} c/u</span>`,
     "    </div>",
-    '    <div class="cart-product__actions cart-product__actions--col">',
-    '      <div class="cart-product__quantity cart-product__quantity--row" aria-label="Control de cantidad">',
-    `        <button class="cart-product__quantity-btn" type="button" data-action="decrease" data-product-id="${item.productId}" aria-label="Restar unidad">-</button>`,
-    `        <span class="cart-product__quantity-value" aria-live="polite">${item.cantidad}</span>`,
-    `        <button class="cart-product__quantity-btn" type="button" data-action="increase" data-product-id="${item.productId}" aria-label="Sumar unidad">+</button>`,
-    "      </div>",
-    `      <button class="cart-product__remove-btn" type="button" data-action="remove" data-product-id="${item.productId}">Eliminar</button>`,
+    "  </div>",
+    '  <div class="cart-product__actions">',
+    '    <div class="cart-product__quantity" aria-label="Control de cantidad">',
+    `      <button class="cart-product__quantity-btn" type="button" data-action="decrease" data-product-id="${item.productId}" aria-label="Restar unidad">-</button>`,
+    `      <span class="cart-product__quantity-value" aria-live="polite">${item.cantidad}</span>`,
+    `      <button class="cart-product__quantity-btn" type="button" data-action="increase" data-product-id="${item.productId}" aria-label="Sumar unidad">+</button>`,
     "    </div>",
-    "  </article>",
+    `    <span class="cart-product__subtotal">${formatPrice(lineSubtotal)}</span>`,
+    `    <button class="cart-product__remove-btn" type="button" data-action="remove" data-product-id="${item.productId}">Eliminar</button>`,
+    "  </div>",
     "</li>",
   ].join("");
 };
