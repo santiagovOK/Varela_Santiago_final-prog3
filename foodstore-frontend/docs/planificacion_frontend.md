@@ -23,38 +23,40 @@ El estado inicial de ambas partes del proyecto provienen de sus repositorios bas
 
 ### Paso 2: Módulo de Autenticación y Seguridad
 - **Registro (`pages/auth/registro`):**
-  - **UI/CSS:** Estilizar el formulario de registro (`registro.html`) replicando la estética del proyecto.
+  - **UI/CSS:** Estilizar el formulario de registro (`registro.html`) replicando la estética del `register_template.png`. Asegurar que no falten los campos de Nombre, Apellido, Email, Celular, Contraseña, el botón de registro y el link para volver al login. (acá sumé más campos que los que estaban originariamente en el template, ya que en el UMl del backend la entidad usuario tenía más campos.)
   - **Lógica:** Implementar `fetch` a `/api/usuarios/register`, validar campos y auto-loguear al usuario.
 - **Login (`pages/auth/login`):**
+  - **UI/CSS:** Mantener la estética centralizada (`login_template.png`), con campos de Email y Contraseña, botón de Ingresar y links útiles.
   - **Lógica:** Implementar `fetch` a `/api/usuarios/login` y persistir la sesión en `localStorage`.
 - **Protección de Rutas (Guard):**
   - Mantener la función central en `main.ts` y redirigir correctamente según el rol (`ADMIN` a `/admin/home` y `USUARIO` a `/client/home`).
 
 ### Paso 3: Módulo Cliente - Catálogo y Carrito (Desarrollo UI y Lógica)
 - **Home de Tienda (`store/home`):**
-  - **UI/CSS:** Desarrollar la maqueta HTML/CSS para el catálogo, el sidebar y los filtros.
+  - **UI/CSS:** Desarrollar la maqueta HTML/CSS guiándose por `home-store_template.png`. Requisitos innegociables: Navbar superior (con logo, navegación, carrito con badge numérico, nombre de usuario y cerrar sesión), Sidebar lateral (filtros por categoría con íconos), barra de búsqueda, selectores de ordenamiento, y grid de cards de productos (con imagen, categoría, nombre, descripción, precio y badge de disponibilidad).
   - **Lógica:** Hacer GET a `/api/categorias` y `/api/productos`. Renderizar dinámicamente las cards.
 - **Detalle de Producto (`store/productDetail`):**
-  - **UI/CSS:** Diseñar la vista de detalle del producto.
+  - **UI/CSS:** Diseñar la vista según `product-detail_template.png`. Requisitos: Navbar superior, imagen destacada grande a la izquierda, y a la derecha: título, precio, badge de stock/disponibilidad, descripción, selector de cantidad (+ y -), y botones de "Agregar al carrito" y "Volver".
   - **Lógica:** Leer el ID de la URL y hacer GET específico. Botón "Agregar al carrito" con validación de stock.
 - **Carrito de Compras (`store/cart`):**
-  - **UI/CSS:** Maquetar la tabla de productos, modal de checkout y resumen de compra.
+  - **UI/CSS:** Maquetar la tabla de productos, modal de checkout y resumen de compra (`cart_template.png` y `order-confirmation_template.png`). No pueden faltar los controles de cantidad, subtotales, total final y botón para confirmar pedido o vaciar.
   - **Lógica:** Operar el `localStorage`, validar stock, y hacer POST a `/api/pedidos` al confirmar la compra.
 
 ### Paso 4: Módulo Cliente - Mis Pedidos (Desarrollo UI y Lógica)
 - **Mis Pedidos (`client/orders`):**
-  - **UI/CSS:** Diseñar la vista de tarjetas de historial de compras y el modal de detalle del pedido.
+  - **UI/CSS:** Diseñar la vista guiándose por `client-order_template.png`. Requisitos: Navbar estándar de cliente y maquetación de tarjetas/tablas de historial de compras y modales de detalle de cada pedido.
   - **Lógica:** Hacer GET a `/api/pedidos/usuario/{id}`. Renderizar estados, productos y cálculos totales.
 
 ### Paso 5: Panel de Administración (Desarrollo UI y Lógica)
 - **Dashboard Admin (`admin/home`):**
-  - **UI/CSS & Lógica:** Renderizar tarjetas con contadores estadísticos de la BD.
+  - **UI/CSS:** Maquetar según `admin-home_template.png`. Requisitos innegociables: Navbar (Logo, Tienda, Panel Admin, Usuario, Cerrar Sesión), Sidebar lateral (Administración, Dashboard, Categorías, Productos, Pedidos, Ver Tienda), y 4 tarjetas de colores grandes para las estadísticas principales, seguidas de un panel de resumen rápido.
+  - **Lógica:** Renderizar contadores estadísticos de la BD.
 - **Categorías (`admin/categories`):**
-  - **UI/CSS & Lógica:** Diseñar tabla y modales. Implementar CRUD consumiendo la API.
+  - **UI/CSS & Lógica:** Maquetar según `crud-categorias_template_*.png`. Requisitos: Layout base (Navbar + Sidebar), título, botón "+ Nueva Categoría" verde a la derecha, y tabla con columnas (ID, Imagen, Nombre, Descripción, Acciones). Los botones de acción deben ser "Editar" (gris) y "Eliminar" (rojo). Modales correspondientes.
 - **Productos (`admin/products`):**
-  - **UI/CSS & Lógica:** Diseñar tabla y modales. Implementar CRUD con `<select>` de categorías.
+  - **UI/CSS & Lógica:** Maquetar según `crud-productos_template_*.png`. Mismo layout base y estructura de tabla que categorías, agregando Precio, Stock, Estado. Incluir selector dinámico de categoría en el modal.
 - **Gestión de Pedidos (`admin/orders`):**
-  - **UI/CSS & Lógica:** Visualizar TODOS los pedidos. Implementar `<select>` para que el admin cambie el estado mediante PATCH.
+  - **UI/CSS & Lógica:** Maquetar según `pedidos-managament_template_*.png`. Visualizar TODOS los pedidos en tabla. Requisito vital: Implementar un `<select>` de estado por fila para que el admin cambie el estado del pedido mediante PATCH.
 
 ---
 
@@ -108,3 +110,21 @@ El sistema de redirección del Frontend funciona como un control de acceso de do
      - **Sesión ausente:** Si cualquier usuario que no haya iniciado sesión intenta entrar a una zona protegida, es redirigido obligatoriamente a `/src/pages/auth/login/login.html`.
 
 Este flujo garantiza una separación rigurosa entre el catálogo comercial y el panel de administración, delegando el control de vistas de forma robusta y cumpliendo con las especificaciones del TPI.
+
+---
+
+## Asignación de Templates a Archivos HTML
+
+Para garantizar que la maquetación coincida plenamente con las expectativas visuales, a continuación se especifica qué mockup (imágenes dentro de la carpeta `docs/` del frontend) le corresponde a cada vista HTML:
+
+- `login_template.png` ➔ `/src/pages/auth/login/login.html`
+- `register_template.png` ➔ `/src/pages/auth/registro/registro.html`
+- `home-store_template.png` ➔ `/src/pages/store/home/home.html`
+- `product-detail_template.png` ➔ `/src/pages/store/productDetail/productDetail.html`
+- `cart_template.png` ➔ `/src/pages/store/cart/cart.html`
+- `order-confirmation_template.png` ➔ Modal de resumen/éxito ya integrado en `/src/pages/store/cart/cart.html`
+- `client-order_template.png` ➔ `/src/pages/client/orders/orders.html`
+- `admin-home_template.png` ➔ `/src/pages/admin/home/home.html`
+- `crud-categorias_template_1.png`, `2.png`, `3.png` ➔ `/src/pages/admin/categories/categories.html`
+- `crud-productos_template_1.png`, `2.png`, `3.png` ➔ `/src/pages/admin/products/products.html`
+- `pedidos-managament_template_1.png`, `2.png`, `3.png` ➔ `/src/pages/admin/orders/orders.html`
