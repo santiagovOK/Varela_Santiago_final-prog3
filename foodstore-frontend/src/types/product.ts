@@ -14,7 +14,7 @@ export interface Product {
   stock: number;
   imagen: string; // URL o ruta de la imagen
   disponible: boolean;
-  categorias: ICategory[]; // Un producto puede pertenecer a varias categorías
+  categoriaDto?: ICategory; // TPI: Relación con categoría (ManyToOne en backend)
   eliminado: boolean;
   createdAt: string; // formato en ISO date string
 }

@@ -78,9 +78,8 @@ const normalizeText = (value: string): string => {
 // Si selectedCategory es "all", no aplica filtro por categoría.
 const matchesCategory = (product: Product, selectedCategory: string): boolean => {
   if (selectedCategory === "all") return true;
-  return product.categorias.some((category) => {
-    return normalizeText(category.nombre) === normalizeText(selectedCategory);
-  });
+  if (!product.categoriaDto) return false;
+  return normalizeText(product.categoriaDto.nombre) === normalizeText(selectedCategory);
 };
 
 // Verifica si el nombre del producto coincide parcial o totalmente con la búsqueda.
@@ -152,7 +151,7 @@ const addProductToCartStorage = (productId: string): void => {
 // Crea el HTML de una tarjeta de producto usando la estructura BEM de home.html.
 // El botón "Agregar" queda preparado con data-product-id para conectarlo después al carrito.
 const createProductCardTemplate = (product: Product): string => {
-  const firstCategoryName = product.categorias?.[0]?.nombre || "Sin categoria";
+  const firstCategoryName = product.categoriaDto?.nombre || "Sin categoria";
   const imageSrc = product.imagen && product.imagen.startsWith("http") ? product.imagen : `/images/${product.imagen || 'placeholder.jpg'}`;
 
   return [

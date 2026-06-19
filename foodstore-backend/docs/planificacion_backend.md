@@ -35,8 +35,8 @@ El estado inicial de ambas partes del proyecto provienen de sus repositorios bas
 *Nota: Estos cambios se agregaron luego de una revisión del estado del frontend para asegurar la correcta integración del TPI.*
 - **Inclusión del Rol en DTO:** Añadir el campo `rol` en `UsuarioDto` para que el cliente pueda conocer la identidad de la sesión y proteger las rutas adecuadamente (Admin/Cliente).
 - **Validación del Apellido:** Retirar la validación estricta (`@NotBlank`) del campo `apellido` en `UsuarioCreate`, ya que el formulario de registro no cuenta con este campo de entrada.
-- **Nomenclatura del Email:** Considerar que el frontend envía la propiedad `email`, pero el backend mapea actualmente `mail`. Se deberá ajustar la nomenclatura de los DTOs (`UsuarioLogin`, `UsuarioCreate`, `UsuarioDto`) a `email` para mantener estricta coherencia. 
-
+- **Nomenclatura del Email:** Considerar que el frontend envía la propiedad `email`, pero el backend mapea actualmente `mail`. Se deberá ajustar la nomenclatura de los DTOs (`UsuarioLogin`, `UsuarioCreate`, `UsuarioDto`) a `email` para mantener estricta coherencia.
+- **Datos de prueba:** Agregar y adaptar datos de prueba sugeridos a DataInitializer.
 ---
 
 ## Estructura del Proyecto (Estado Actual vs. Faltantes)

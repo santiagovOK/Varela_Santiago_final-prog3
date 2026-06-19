@@ -154,7 +154,7 @@ const updateTotals = (items: CartItem[]): void => {
 
 const createCartItemTemplate = (item: CartItem): string => {
   const product = state.productsById.get(item.productId);
-  const category = product?.categorias?.[0]?.nombre || "Sin categoria";
+  const category = product?.categoriaDto?.nombre || "Sin categoria";
   const lineSubtotal = getLineSubtotal(item.precioUnitario, item.cantidad);
   const imageSrc = item.imagen && item.imagen.startsWith("http") ? item.imagen : `/images/${item.imagen || 'placeholder.jpg'}`;
 
