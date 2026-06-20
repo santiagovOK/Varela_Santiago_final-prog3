@@ -88,6 +88,19 @@ Centralizar las excepciones en `AdviceController` simplifica los controladores y
 #### ¿Por qué?
 Durante el proceso de conexión real, la pequeña divergencia de nomenclatura entre el cliente web (`email`) y la API (`mail`) causaba rupturas de contrato en los DTOs; normalizar los nombres desde el Backend formaliza la estructura JSON que espera la aplicación. Esto fue así porque la nomenclatura había sido heredada desde los TPs/parcial que hicimos previamente en la asignatura. Por otro lado, la omisión de transaccionalidad al manipular entidades complejas provocaba la caída del servidor local, por lo que su agregado estabilizó permanentemente el arranque simultáneo de ambos proyectos.
 
+### 7. Inicialización de Datos y Ajuste de Assets Estáticos
+
+- **Épica:** EP-05 (Infraestructura y Arquitectura).
+- **Sprint:** Sprint 4 (Integración y Refinamiento).
+- **Historias de Usuario:** "Poblamiento Inicial de Datos" y "Manejo de Imágenes de Producto".
+- **Clases Modificadas y Creadas:**
+  - `DataInitializer`: Se utilizó esta clase que fue creada en los últimos TPs, que integra un componente con `@PostConstruct` encargado de poblar la base de datos H2 en memoria cada vez que inicia el servidor. Así, se inyectaron usuarios (Admin y Cliente), categorías, productos y pedidos pre-cargados a partir de los archivos de prueba.
+  - `Producto.java`: Se amplió la capacidad de las columnas `imagen` y `descripcion` mediante `@Column(length = 1000)` para prevenir la excepción `JdbcSQLDataException: Value too long` (que provocaba la caída del backend con código 502 Bad Gateway) al insertar URLs extensas.
+  - **Ajuste de Imágenes estáticas**: Se reemplazaron los links caídos de la API externa en el `DataInitializer` por referencias a archivos estáticos locales (`burger.webp` y `pizza.jpg`). Además, se migró la imagen `burger.webp` a la carpeta `public/images/` del frontend, garantizando que el navegador pueda solicitarlas correctamente al servidor de desarrollo de Vite sin depender del backend.
+
+#### ¿Por qué?
+Tener un set de datos de prueba robusto y automático acelera enormemente el desarrollo y las pruebas, evitando tener que cargar entidades manualmente en cada reinicio de la base de datos en memoria (H2). Asimismo, ampliar la longitud de las columnas `VARCHAR` en JPA previene cierres inesperados del servidor debido a la restricción estándar de 255 caracteres de Hibernate. Por último, servir los assets estáticos desde la carpeta pública del frontend asegura que el navegador acceda a las imágenes de manera rápida y directa, corrigiendo las imágenes rotas por caídas de servicios externos.
+
 ---
 
 ## Frontend

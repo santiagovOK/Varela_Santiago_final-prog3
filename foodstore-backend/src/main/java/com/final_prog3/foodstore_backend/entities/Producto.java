@@ -33,8 +33,10 @@ public class Producto extends Base {
 
     private String nombre;
     private Double precio;
+    @jakarta.persistence.Column(length = 1000) // TPI: cambio en la extensión de los strings para que gradle compile en base al largo de los textos provenientes de los datos consumibles.
     private String descripcion;
     private int stock;
+    @jakarta.persistence.Column(length = 1000)
     private String imagen;
     private boolean disponible;
 
