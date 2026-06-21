@@ -160,3 +160,15 @@ Migrar el catálogo estático a un consumo real de la API es uno de los puntos m
 
 #### ¿Por qué?
 Permitirle a un cliente tener una trazabilidad simple de todas sus compras (con precios, fechas y formas de pago) es el flujo final necesario para que un e-commerce se vea confiable. El aprovechamiento de componentes nativos como el `<dialog>` para el modal garantiza robustez, mientras que la eliminación de colores hardcodeados (hex) fomenta un sistema de diseño desde una única fuente de verdad (`styles.css`, como lo vimos en la primera etapa de la cursada), lo que facilita en el futuro implementar económicamente un posible rediseño de ser necesario.
+
+### 5. Panel de Administración - Dashboard
+
+- **Épica:** EP-06 (Panel de Administración).
+- **Sprint:** Sprint 5 (Vistas de Administración).
+- **Historias de Usuario:** "Visualización de Estadísticas del Sistema".
+- **Archivos Modificados y Creados:**
+  - `src/pages/admin/home/home.html` y `home.css`: Se implementó la vista principal del administrador siguiendo el diseño sugerido, utilizando Flexbox para la estructura de Navbar y Sidebar. Se aplicó la metodología BEM para el diseño de componentes.
+  - `src/pages/admin/home/home.ts`: Se integró la protección de ruta y validación de permisos (`checkAuhtUser(..., "ADMIN")`). Se desarrolló lógica asíncrona concurrente (`Promise.all()`) para consumir 4 endpoints de la API (`/api/productos`, `/api/categorias`, `/api/pedidos`, `/api/usuarios`) y popular de forma dinámica los contadores estadísticos y la tabla resumen de últimos pedidos. Además, se empleó `import type` para las interfaces en TypeScript y así evitar errores de transpilación en Vite al resolver dependencias de tipos sin exportaciones en tiempo de ejecución.
+
+#### ¿Por qué?
+El Dashboard administrativo requiere una visualización limpia e inmediata del estado global de la tienda, de ahí la importancia de hacer llamadas asíncronas concurrentes; resolver las métricas al mismo tiempo minimiza el tiempo de carga total. Diseñar la estructura utilizando Flexbox y referenciando colores de CSS centralizados en el `:root` no solo permite alinear los componentes correctamente, sino que hace la UI completamente escalable y dota al proyecto de consistencia visual, permitiendo futuros cambios de branding únicamente modificando las variables base. Finalmente, la estricta utilización de tipado exportado (`import type`) evita cierres e inconsistencias del empaquetador Vite.

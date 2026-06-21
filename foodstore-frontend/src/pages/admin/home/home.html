@@ -1,18 +1,72 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Panel de Administración | Food Store</title>
     <link rel="stylesheet" href="../../../styles.css">
+    <link rel="stylesheet" href="./home.css">
 </head>
-
 <body>
-    <h1>Hola desde la vista de admin</h1>
-    <button id="logoutButton">Logout</button>
+    <div class="admin-layout">
+        <!-- TPI: Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar__logo">
+                <h2>Food Store Admin</h2>
+            </div>
+            <nav class="sidebar__nav">
+                <a href="./home.html" class="sidebar__link sidebar__link--active">Dashboard</a>
+                <a href="../categories/categories.html" class="sidebar__link">Categorías</a>
+                <a href="../products/products.html" class="sidebar__link">Productos</a>
+                <a href="../orders/orders.html" class="sidebar__link">Pedidos</a>
+                <a href="../../store/home/home.html" class="sidebar__link sidebar__link--outline">Ver Tienda</a>
+            </nav>
+        </aside>
+
+        <!-- TPI: Main -->
+        <main class="main-content">
+            <!-- TPI: Navbar -->
+            <header class="navbar">
+                <div class="navbar__title">Panel de Control</div>
+                <div class="navbar__user">
+                    <span id="userNameDisplay" class="navbar__user-name">Cargando...</span>
+                    <button id="logoutButton" class="btn btn--outline">Cerrar Sesión</button>
+                </div>
+            </header>
+
+            <!-- TPI: Dashboard -->
+            <section class="dashboard">
+                <h1 class="dashboard__title">Resumen del Sistema</h1>
+                
+                <div class="dashboard__cards">
+                    <div class="stat-card stat-card--primary">
+                        <h3 class="stat-card__title">Total Productos</h3>
+                        <p class="stat-card__value" id="statProducts">-</p>
+                    </div>
+                    <div class="stat-card stat-card--success">
+                        <h3 class="stat-card__title">Total Categorías</h3>
+                        <p class="stat-card__value" id="statCategories">-</p>
+                    </div>
+                    <div class="stat-card stat-card--warning">
+                        <h3 class="stat-card__title">Pedidos Totales</h3>
+                        <p class="stat-card__value" id="statOrders">-</p>
+                    </div>
+                    <div class="stat-card stat-card--info">
+                        <h3 class="stat-card__title">Usuarios Registrados</h3>
+                        <p class="stat-card__value" id="statUsers">-</p>
+                    </div>
+                </div>
+
+                <div class="dashboard__summary">
+                    <h2>Últimos 5 Pedidos</h2>
+                    <div class="summary-panel" id="summaryPanel">
+                        <p style="font-size: 1.4rem;">Cargando información...</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
     <script type="module" src="./home.ts"></script>
 </body>
-
-
 </html>
