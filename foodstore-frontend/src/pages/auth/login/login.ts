@@ -50,7 +50,9 @@ form.addEventListener("submit", async (event: SubmitEvent) => {
     const userSession: IUser = {
       id: userData.id,
       nombre: userData.nombre,
+      apellido: userData.apellido,
       email: userData.email,
+      celular: userData.celular,
       rol: userData.rol, // Manejamos posible variacion en respuesta
     };
 

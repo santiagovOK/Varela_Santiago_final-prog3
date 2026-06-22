@@ -196,3 +196,16 @@ Desarrollar el panel completo de categorías es el primer gran paso para darle c
 
 #### ¿Por qué?
 El módulo de Productos es una de las partes más importantes en la lógica transaccional del e-commerce. La concurrencia asincrónica de llamadas a la API es clave para que los selectores del formulario contengan información en tiempo real, garantizando la integridad de referencias cruzadas (Categoría-Producto).
+
+### 8. Panel de Administración - Gestión de Pedidos y Ajustes de Sesión
+
+- **Épica:** EP-03 (Gestión de Pedidos) / EP-06 (Panel de Administración).
+- **Sprint:** Sprint 5 (Vistas de Administración).
+- **Historias de Usuario:** "Modificar Estado de Pedido" y "Listar Pedidos".
+- **Archivos Modificados y Creados:**
+  - `src/pages/admin/orders/orders.html` y `orders.css`: Se diseñó la vista principal de la lista de pedidos siguiendo la convención de Flexbox empleada en los demás apartados (eliminando el uso de CSS Grid para estandarizar el diseño bajo un mismo modelo de caja). Se crearon *badges* estéticos para reflejar visualmente los distintos estados de un pedido. Se incorporó también un modal nativo de detalle que contiene la sub-tabla de ítems que integran la compra.
+  - `src/pages/admin/orders/orders.ts`: Se implementó la lógica de consumo para `GET /api/pedidos` ordenando automáticamente de manera cronológica inversa (más recientes primero). Se configuró la actualización mediante `PATCH /api/pedidos/{id}/status` con validación estricta de variables en base al Enum esperado por el backend (`PENDIENTE`, `CONFIRMADO`, `TERMINADO`, `CANCELADO`) para evitar errores de internal server error (`HTTP 500`) arrojados por el deserializador de Jackson en Java. Se corrigieron variables e interfaces para matchear `PedidoDto`.
+  - `src/pages/auth/login/login.ts` y `src/utils/auth.ts`: Se parcheó el inicio de sesión para persistir correctamente los campos `apellido` y `celular` de la respuesta del backend. Además, la función `checkAuhtUser()` fue refactorizada para devolver el objeto `IUser` parseado en lugar de `void`, solucionando la advertencia estática del IDE y la visualización del famoso "undefined" en los saludos del Navbar.
+
+#### ¿Por qué?
+El módulo de pedidos es un requisito indispensable porque permite a los administradores hacer avanzar a las órdenes en su ciclo de vida y trazabilidad real. Respetar estrictamente las nomenclaturas y tipos de datos provistos por la base de datos (enums) evita que el Frontend envíe peticiones corruptas que colapsen la API. Por su parte, la refactorización de la sesión centraliza mejor la información del usuario para todo el panel, haciendo honor a los atributos extra (como el apellido) devueltos por la BD en el DTO sin necesidad de generar una nueva petición para averiguarlos.

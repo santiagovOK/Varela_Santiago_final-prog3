@@ -1,13 +1,114 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin - Pedidos | Food Store</title>
-  <link rel="stylesheet" href="/src/styles.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administración de Pedidos | Food Store</title>
+    <link rel="stylesheet" href="../../../styles.css">
+    <link rel="stylesheet" href="../home/home.css">
+    <link rel="stylesheet" href="./orders.css">
 </head>
 <body>
-  <h1>Gestión de Pedidos (Admin)</h1>
-  <script type="module" src="./orders.ts"></script>
+    <div class="admin-layout">
+        <!-- TPI: Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar__logo">
+                <h2>Food Store Admin</h2>
+            </div>
+            <nav class="sidebar__nav">
+                <a href="../home/home.html" class="sidebar__link">Dashboard</a>
+                <a href="../categories/categories.html" class="sidebar__link">Categorías</a>
+                <a href="../products/products.html" class="sidebar__link">Productos</a>
+                <a href="./orders.html" class="sidebar__link sidebar__link--active">Pedidos</a>
+                <a href="../../store/home/home.html" class="sidebar__link sidebar__link--outline">Ver Tienda</a>
+            </nav>
+        </aside>
+
+        <!-- TPI: Main -->
+        <main class="main-content">
+            <!-- TPI: Navbar -->
+            <header class="navbar">
+                <div class="navbar__title">Gestión de Pedidos</div>
+                <div class="navbar__user">
+                    <span id="userNameDisplay" class="navbar__user-name">Cargando...</span>
+                    <button id="logoutButton" class="btn btn--outline">Cerrar Sesión</button>
+                </div>
+            </header>
+
+            <!-- TPI: CRUD en orders -->
+            <section class="crud-section">
+                <div class="crud-header">
+                    <h1 class="crud-header__title">Todos los Pedidos</h1>
+                </div>
+                
+                <div class="table-container">
+                    <table class="crud-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Fecha</th>
+                                <th>Cliente</th>
+                                <th>Total</th>
+                                <th>Forma de Pago</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ordersTableBody">
+                            <tr><td colspan="7" style="text-align: center; padding: 2rem; font-size: 1.4rem;">Cargando pedidos...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- TPI: Modal Detalle/Actualizar -->
+    <dialog id="orderModal" class="modal">
+        <div class="modal__content">
+            <h2 id="modalTitle" class="modal__title">Detalle de Pedido #<span id="modalOrderId"></span></h2>
+            
+            <div class="order-info">
+                <p><strong>Cliente:</strong> <span id="modalClient"></span></p>
+                <p><strong>Fecha:</strong> <span id="modalDate"></span></p>
+                <p><strong>Total:</strong> <span id="modalTotal"></span></p>
+                <p><strong>Pago:</strong> <span id="modalPayment"></span></p>
+            </div>
+
+            <div class="order-details-table-container">
+                <table class="crud-table">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Precio</th>
+                            <th>Cantidad</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody id="modalDetailsBody">
+                    </tbody>
+                </table>
+            </div>
+
+            <form id="orderForm" class="modal__form">
+                <input type="hidden" id="orderIdInput">
+                <div class="form-group">
+                    <label for="orderStatusSelect">Cambiar Estado del Pedido:</label>
+                    <select id="orderStatusSelect" required>
+                        <option value="PENDIENTE">PENDIENTE</option>
+                        <option value="CONFIRMADO">CONFIRMADO</option>
+                        <option value="TERMINADO">TERMINADO</option>
+                        <option value="CANCELADO">CANCELADO</option>
+                    </select>
+                </div>
+                <div class="modal__actions">
+                    <button type="button" id="btnCancelModal" class="btn btn--secondary">Cerrar</button>
+                    <button type="submit" class="btn btn--primary">Actualizar Estado</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <script type="module" src="./orders.ts"></script>
 </body>
 </html>
