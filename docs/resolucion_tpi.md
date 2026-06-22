@@ -163,8 +163,8 @@ Permitirle a un cliente tener una trazabilidad simple de todas sus compras (con 
 
 ### 5. Panel de Administración - Dashboard
 
-- **Épica:** EP-06 (Panel de Administración).
-- **Sprint:** Sprint 5 (Vistas de Administración).
+- **Épica:** EP-02 (Gestión de Usuarios) / EP-05 (Infraestructura y Arquitectura).
+- **Sprint:** Sprint 2 - Usuarios y Productos (Semana 3-4).
 - **Historias de Usuario:** "Visualización de Estadísticas del Sistema".
 - **Archivos Modificados y Creados:**
   - `src/pages/admin/home/home.html` y `home.css`: Se implementó la vista principal del administrador siguiendo el diseño sugerido, utilizando Flexbox para la estructura de Navbar y Sidebar. Se aplicó la metodología BEM para el diseño de componentes.
@@ -175,8 +175,8 @@ El Dashboard administrativo requiere una visualización limpia e inmediata del e
 
 ### 6. Panel de Administración - Gestión de Categorías
 
-- **Épica:** EP-01 (Gestión de Categorías) / EP-06 (Panel de Administración).
-- **Sprint:** Sprint 5 (Vistas de Administración).
+- **Épica:** EP-01 (Gestión de Categorías).
+- **Sprint:** Sprint 1 - Fundamentos (Semana 1-2).
 - **Historias de Usuario:** "Crear Categoría", "Editar Categoría", "Eliminar Categoría", y "Listar Categorías".
 - **Archivos Modificados y Creados:**
   - `src/pages/admin/categories/categories.html` y `categories.css`: Se implementó un layout CRUD con Navbar, Sidebar y un panel principal que contiene una tabla de datos interactiva. Se diseñó una ventana modal nativa (`<dialog>`) para los formularios de creación/edición, reutilizando la lógica modular y colores del proyecto mediante variables de CSS.
@@ -187,8 +187,8 @@ Desarrollar el panel completo de categorías es el primer gran paso para darle c
 
 ### 7. Panel de Administración - Gestión de Productos
 
-- **Épica:** EP-02 (Gestión de Productos) / EP-06 (Panel de Administración).
-- **Sprint:** Sprint 5 (Vistas de Administración).
+- **Épica:** EP-03 (Gestión de Productos).
+- **Sprint:** Sprint 2 - Usuarios y Productos (Semana 3-4).
 - **Historias de Usuario:** "Crear Producto", "Editar Producto", "Eliminar Producto", y "Listar Productos".
 - **Archivos Modificados y Creados:**
   - `src/pages/admin/products/products.html` y `products.css`: Se replicó la arquitectura de UI del listado de categorías, agregando una tabla más robusta con nuevas columnas (Imagen, Categoría, Precio, Stock, Estado) y badges/tags visuales para reflejar la disponibilidad (activo/inactivo). Se amplió el formulario del modal nativo para capturar todos los atributos del DTO `ProductoCreate`.
@@ -199,8 +199,8 @@ El módulo de Productos es una de las partes más importantes en la lógica tran
 
 ### 8. Panel de Administración - Gestión de Pedidos y Ajustes de Sesión
 
-- **Épica:** EP-03 (Gestión de Pedidos) / EP-06 (Panel de Administración).
-- **Sprint:** Sprint 5 (Vistas de Administración).
+- **Épica:** EP-04 (Gestión de Pedidos).
+- **Sprint:** Sprint 3 - Pedidos (Semana 5-6).
 - **Historias de Usuario:** "Modificar Estado de Pedido" y "Listar Pedidos".
 - **Archivos Modificados y Creados:**
   - `src/pages/admin/orders/orders.html` y `orders.css`: Se diseñó la vista principal de la lista de pedidos siguiendo la convención de Flexbox empleada en los demás apartados (eliminando el uso de CSS Grid para estandarizar el diseño bajo un mismo modelo de caja). Se crearon *badges* estéticos para reflejar visualmente los distintos estados de un pedido. Se incorporó también un modal nativo de detalle que contiene la sub-tabla de ítems que integran la compra.
@@ -208,4 +208,4 @@ El módulo de Productos es una de las partes más importantes en la lógica tran
   - `src/pages/auth/login/login.ts` y `src/utils/auth.ts`: Se parcheó el inicio de sesión para persistir correctamente los campos `apellido` y `celular` de la respuesta del backend. Además, la función `checkAuhtUser()` fue refactorizada para devolver el objeto `IUser` parseado en lugar de `void`, solucionando la advertencia estática del IDE y la visualización del famoso "undefined" en los saludos del Navbar.
 
 #### ¿Por qué?
-El módulo de pedidos es un requisito indispensable porque permite a los administradores hacer avanzar a las órdenes en su ciclo de vida y trazabilidad real. Respetar estrictamente las nomenclaturas y tipos de datos provistos por la base de datos (enums) evita que el Frontend envíe peticiones corruptas que colapsen la API. Por su parte, la refactorización de la sesión centraliza mejor la información del usuario para todo el panel, haciendo honor a los atributos extra (como el apellido) devueltos por la BD en el DTO sin necesidad de generar una nueva petición para averiguarlos.
+El módulo de pedidos es un requisito importante porque permite a los administradores hacer avanzar a las órdenes en su ciclo de vida y trazabilidad real. Respetar estrictamente las nomenclaturas y tipos de datos provistos por la base de datos (enums) evita que el Frontend envíe peticiones corruptas que colapsen la API. Por su parte, se  refactorizó la sesión, centralizando mejor la información del usuario para todo el panel.
