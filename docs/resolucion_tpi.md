@@ -184,3 +184,15 @@ El Dashboard administrativo requiere una visualización limpia e inmediata del e
 
 #### ¿Por qué?
 Desarrollar el panel completo de categorías es el primer gran paso para darle control al Administrador de la plataforma, dotándolo de la capacidad de interactuar libremente con la base de datos sin depender de código crudo. La reutilización del layout base permite una experiencia consistente en toda la zona administrativa. El empleo de modales HTML5 nativos garantiza semántica, ligereza y accesibilidad superior a los frameworks de CSS, cumpliendo también con las consignas para este trabajo.
+
+### 7. Panel de Administración - Gestión de Productos
+
+- **Épica:** EP-02 (Gestión de Productos) / EP-06 (Panel de Administración).
+- **Sprint:** Sprint 5 (Vistas de Administración).
+- **Historias de Usuario:** "Crear Producto", "Editar Producto", "Eliminar Producto", y "Listar Productos".
+- **Archivos Modificados y Creados:**
+  - `src/pages/admin/products/products.html` y `products.css`: Se replicó la arquitectura de UI del listado de categorías, agregando una tabla más robusta con nuevas columnas (Imagen, Categoría, Precio, Stock, Estado) y badges/tags visuales para reflejar la disponibilidad (activo/inactivo). Se amplió el formulario del modal nativo para capturar todos los atributos del DTO `ProductoCreate`.
+  - `src/pages/admin/products/products.ts`: Se integró el CRUD completo contra la API REST (`/api/productos`). Se usó `Promise.all()` para cargar concurrentemente tanto los productos como las categorías y poblar dinámicamente el `<select>` del formulario. También se homologó el enrutamiento de imágenes estáticas a través de una lógica coherente (para aquellas que están en public/images más que nada) y se persistió el uso del bloque `try/catch` con `console.log` preventivos de métricas.
+
+#### ¿Por qué?
+El módulo de Productos es una de las partes más importantes en la lógica transaccional del e-commerce. La concurrencia asincrónica de llamadas a la API es clave para que los selectores del formulario contengan información en tiempo real, garantizando la integridad de referencias cruzadas (Categoría-Producto).

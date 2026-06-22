@@ -1,13 +1,125 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin - Productos | Food Store</title>
-  <link rel="stylesheet" href="/src/styles.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administración de Productos | Food Store</title>
+    <link rel="stylesheet" href="../../../styles.css">
+    <link rel="stylesheet" href="../home/home.css">
+    <link rel="stylesheet" href="./products.css">
 </head>
 <body>
-  <h1>Administración de Productos</h1>
-  <script type="module" src="./products.ts"></script>
+    <div class="admin-layout">
+        <!-- TPI: Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar__logo">
+                <h2>Food Store Admin</h2>
+            </div>
+            <nav class="sidebar__nav">
+                <a href="../home/home.html" class="sidebar__link">Dashboard</a>
+                <a href="../categories/categories.html" class="sidebar__link">Categorías</a>
+                <a href="./products.html" class="sidebar__link sidebar__link--active">Productos</a>
+                <a href="../orders/orders.html" class="sidebar__link">Pedidos</a>
+                <a href="../../store/home/home.html" class="sidebar__link sidebar__link--outline">Ver Tienda</a>
+            </nav>
+        </aside>
+
+        <!-- TPI: Main -->
+        <main class="main-content">
+            <!-- TPI: Navbar -->
+            <header class="navbar">
+                <div class="navbar__title">Gestión de Productos</div>
+                <div class="navbar__user">
+                    <span id="userNameDisplay" class="navbar__user-name">Cargando...</span>
+                    <button id="logoutButton" class="btn btn--outline">Cerrar Sesión</button>
+                </div>
+            </header>
+
+            <!-- TPI:  Products -->
+            <section class="crud-section">
+                <div class="crud-header">
+                    <h1 class="crud-header__title">Lista de Productos</h1>
+                    <button id="btnNewProduct" class="btn btn--success">+ Nuevo Producto</button>
+                </div>
+                
+                <div class="table-container">
+                    <table class="crud-table">
+                        <thead>
+                            <tr>
+                                <th>Imagen</th>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Categoría</th>
+                                <th>Precio</th>
+                                <th>Stock</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productsTableBody">
+                            <tr><td colspan="8" style="text-align: center; padding: 2rem; font-size: 1.4rem;">Cargando productos...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- TPI: Modal Formulario -->
+    <dialog id="productModal" class="modal">
+        <div class="modal__content">
+            <h2 id="modalTitle" class="modal__title">Nuevo Producto</h2>
+            <form id="productForm" class="modal__form">
+                <input type="hidden" id="productId">
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="productName">Nombre</label>
+                        <input type="text" id="productName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="productCategory">Categoría</label>
+                        <select id="productCategory" required>
+                            <option value="">Seleccione una categoría</option>
+                            <!-- Dynamic options -->
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="productDesc">Descripción</label>
+                    <textarea id="productDesc" required rows="2"></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="productPrice">Precio ($)</label>
+                        <input type="number" step="0.01" min="0" id="productPrice" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="productStock">Stock</label>
+                        <input type="number" step="1" min="0" id="productStock" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="productImage">URL de la Imagen</label>
+                    <input type="url" id="productImage" placeholder="https://... o /images/..." required>
+                </div>
+
+                <div class="form-group form-group--checkbox">
+                    <input type="checkbox" id="productAvailable" checked>
+                    <label for="productAvailable" style="cursor: pointer;">Producto Disponible</label>
+                </div>
+
+                <div class="modal__actions">
+                    <button type="button" id="btnCancelModal" class="btn btn--secondary">Cancelar</button>
+                    <button type="submit" class="btn btn--primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <script type="module" src="./products.ts"></script>
 </body>
 </html>
