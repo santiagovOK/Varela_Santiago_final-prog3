@@ -1,13 +1,88 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin - Categorías | Food Store</title>
-  <link rel="stylesheet" href="/src/styles.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administración de Categorías | Food Store</title>
+    <link rel="stylesheet" href="../../../styles.css">
+    <link rel="stylesheet" href="../home/home.css">
+    <link rel="stylesheet" href="./categories.css">
 </head>
 <body>
-  <h1>Administración de Categorías</h1>
-  <script type="module" src="./categories.ts"></script>
+    <div class="admin-layout">
+        <!-- TPI:  Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar__logo">
+                <h2>Food Store Admin</h2>
+            </div>
+            <nav class="sidebar__nav">
+                <a href="../home/home.html" class="sidebar__link">Dashboard</a>
+                <a href="./categories.html" class="sidebar__link sidebar__link--active">Categorías</a>
+                <a href="../products/products.html" class="sidebar__link">Productos</a>
+                <a href="../orders/orders.html" class="sidebar__link">Pedidos</a>
+                <a href="../../store/home/home.html" class="sidebar__link sidebar__link--outline">Ver Tienda</a>
+            </nav>
+        </aside>
+
+        <!-- TPI: Main -->
+        <main class="main-content">
+            <!-- TPI: Navbar -->
+            <header class="navbar">
+                <div class="navbar__title">Gestión de Categorías</div>
+                <div class="navbar__user">
+                    <span id="userNameDisplay" class="navbar__user-name">Cargando...</span>
+                    <button id="logoutButton" class="btn btn--outline">Cerrar Sesión</button>
+                </div>
+            </header>
+
+            <!-- TPI: contenido para categories -->
+            <section class="crud-section">
+                <div class="crud-header">
+                    <h1 class="crud-header__title">Lista de Categorías</h1>
+                    <button id="btnNewCategory" class="btn btn--success">+ Nueva Categoría</button>
+                </div>
+                
+                <div class="table-container">
+                    <table class="crud-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Descripción</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="categoriesTableBody">
+                            <tr><td colspan="4" style="text-align: center; padding: 2rem; font-size: 1.4rem;">Cargando categorías...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- TPI: Modal Formulario -->
+    <dialog id="categoryModal" class="modal">
+        <div class="modal__content">
+            <h2 id="modalTitle" class="modal__title">Nueva Categoría</h2>
+            <form id="categoryForm" class="modal__form">
+                <input type="hidden" id="categoryId">
+                <div class="form-group">
+                    <label for="categoryName">Nombre</label>
+                    <input type="text" id="categoryName" required>
+                </div>
+                <div class="form-group">
+                    <label for="categoryDesc">Descripción</label>
+                    <textarea id="categoryDesc" required rows="3"></textarea>
+                </div>
+                <div class="modal__actions">
+                    <button type="button" id="btnCancelModal" class="btn btn--secondary">Cancelar</button>
+                    <button type="submit" class="btn btn--primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <script type="module" src="./categories.ts"></script>
 </body>
 </html>

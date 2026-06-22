@@ -172,3 +172,15 @@ Permitirle a un cliente tener una trazabilidad simple de todas sus compras (con 
 
 #### ¿Por qué?
 El Dashboard administrativo requiere una visualización limpia e inmediata del estado global de la tienda, de ahí la importancia de hacer llamadas asíncronas concurrentes; resolver las métricas al mismo tiempo minimiza el tiempo de carga total. Diseñar la estructura utilizando Flexbox y referenciando colores de CSS centralizados en el `:root` no solo permite alinear los componentes correctamente, sino que hace la UI completamente escalable y dota al proyecto de consistencia visual, permitiendo futuros cambios de branding únicamente modificando las variables base. Finalmente, la estricta utilización de tipado exportado (`import type`) evita cierres e inconsistencias del empaquetador Vite.
+
+### 6. Panel de Administración - Gestión de Categorías
+
+- **Épica:** EP-01 (Gestión de Categorías) / EP-06 (Panel de Administración).
+- **Sprint:** Sprint 5 (Vistas de Administración).
+- **Historias de Usuario:** "Crear Categoría", "Editar Categoría", "Eliminar Categoría", y "Listar Categorías".
+- **Archivos Modificados y Creados:**
+  - `src/pages/admin/categories/categories.html` y `categories.css`: Se implementó un layout CRUD con Navbar, Sidebar y un panel principal que contiene una tabla de datos interactiva. Se diseñó una ventana modal nativa (`<dialog>`) para los formularios de creación/edición, reutilizando la lógica modular y colores del proyecto mediante variables de CSS.
+  - `src/pages/admin/categories/categories.ts`: Se programó el ciclo completo de la interfaz CRUD consumiendo los endpoints del backend (`GET`, `POST`, `PUT`, `DELETE` sobre `/api/categorias`). Además, se implementó control de flujo con alertas para la confirmación al eliminar, y métricas de debug (`console.log` / `console.error`) integradas bajo bloques `try/catch` para cada operación asíncrona (facilitando la auditoría técnica desde las herramientas de desarrollo del navegador).
+
+#### ¿Por qué?
+Desarrollar el panel completo de categorías es el primer gran paso para darle control al Administrador de la plataforma, dotándolo de la capacidad de interactuar libremente con la base de datos sin depender de código crudo. La reutilización del layout base permite una experiencia consistente en toda la zona administrativa. El empleo de modales HTML5 nativos garantiza semántica, ligereza y accesibilidad superior a los frameworks de CSS, cumpliendo también con las consignas para este trabajo.
