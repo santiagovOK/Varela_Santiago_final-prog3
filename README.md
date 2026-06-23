@@ -23,6 +23,14 @@ Repositorio donde podrán encontrar mis trabajos de Programación III: https://g
 
 ---
 
+## 📖 Documentación de la API (Swagger UI)
+
+Una vez que el backend (Spring Boot) se encuentre en ejecución, la documentación interactiva de todos los endpoints generada automáticamente con SpringDoc OpenAPI estará disponible en el siguiente enlace:
+
+- **Swagger UI:** [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
+
+---
+
 Objetivos del proyecto:
 
 <details>
