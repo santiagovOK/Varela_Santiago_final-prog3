@@ -41,7 +41,7 @@ if (rawUser) {
 
 logoutBtn.addEventListener("click", () => {
     removeUser();
-    navigate("../auth/login/login.html");
+    navigate("/src/pages/auth/login/login.html");
 });
 
 // 2. Estado del carrito
@@ -333,8 +333,8 @@ clearCartBtn.addEventListener("click", () => {
 checkoutBtn.addEventListener("click", async () => {
   const userStr = getUSer();
   if (!userStr) {
-    alert("Debes iniciar sesion para finalizar la compra.");
-    window.location.href = "../../auth/login/login.html";
+    alert("Debes iniciar sesión para confirmar el pedido.");
+    window.location.href = "/src/pages/auth/login/login.html";
     return;
   }
 

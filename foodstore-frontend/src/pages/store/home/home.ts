@@ -34,7 +34,7 @@ if (rawUser) {
 
 logoutBtn.addEventListener("click", () => {
     removeUser();
-    navigate("../auth/login/login.html");
+    navigate("/src/pages/auth/login/login.html");
 });
 
 // Variables globales para datos desde el backend

@@ -193,6 +193,11 @@ const loadOrders = async () => {
   } catch (err) {
     console.error("[client-orders] Error al cargar pedidos", err);
     renderError("Ocurrió un error al cargar tus pedidos. Por favor, intenta de nuevo más tarde.");
+    if (err instanceof Response && err.status === 404) {
+      alert("Usuario no encontrado en la base de datos. Por favor, vuelva a iniciar sesión.");
+      window.location.href = "/src/pages/auth/login/login.html";
+      return;
+    }
   }
 };
 
@@ -200,7 +205,7 @@ const loadOrders = async () => {
 if (logoutBtn) {
   logoutBtn.addEventListener("click", () => {
     localStorage.removeItem("store_user");
-    window.location.href = "../../auth/login/login.html";
+    window.location.href = "/src/pages/auth/login/login.html";
   });
 }
 

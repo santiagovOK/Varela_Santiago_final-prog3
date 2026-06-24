@@ -30,7 +30,7 @@ if (rawUser) {
 
 logoutBtn.addEventListener("click", () => {
     removeUser();
-    navigate("../auth/login/login.html");
+    navigate("/src/pages/auth/login/login.html");
 });
 
 // Utilizamos URLSearchParams para extraer el parámetro 'id' de la URL actual

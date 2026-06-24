@@ -209,3 +209,13 @@ El módulo de Productos es una de las partes más importantes en la lógica tran
 
 #### ¿Por qué?
 El módulo de pedidos es un requisito importante porque permite a los administradores hacer avanzar a las órdenes en su ciclo de vida y trazabilidad real. Respetar estrictamente las nomenclaturas y tipos de datos provistos por la base de datos (enums) evita que el Frontend envíe peticiones corruptas que colapsen la API. Por su parte, se  refactorizó la sesión, centralizando mejor la información del usuario para todo el panel.
+
+## Últimos detalles solucionados
+
+### Corrección de Bucle Infinito de Redirección en Cierre de Sesión
+
+- **Problema detectado:** Al hacer clic en "Cerrar Sesión" desde las distintas páginas del flujo del cliente (como la tienda o el carrito), la aplicación entraba en un bucle infinito de redirecciones que crasheaba la pestaña (mostrando repetidas veces `/src/pages/auth/login...` en la URL).
+- **Causa raíz:** Las funciones atadas al evento del botón "Cerrar Sesión" (`logoutBtn`) utilizaban rutas relativas (`navigate("../auth/login/login.html")`). Al navegar desde un subdirectorio (ej. `/src/pages/store/home`), el navegador resolvía a una ruta inexistente. Vite, en su servidor de desarrollo local, capturaba ese Error 404 y servía por defecto el archivo `index.html` de la raíz. A su vez, el `index.html` original incluía un script que redireccionaba mediante `window.location.href = 'src/pages/auth/login/login.html'`. Como este redireccionamiento en el `index.html` **no tenía una barra inicial (`/`)**, el navegador lo trataba como una ruta relativa adicional y lo concatenaba repetidas veces al string de la URL original, creando el bucle.
+- **Solución implementada:** 
+  1. Se agregó una barra inicial estricta al redireccionamiento estático del `index.html` (`window.location.href = '/src/pages/auth/login/login.html'`).
+  2. Se auditaron todos los scripts vinculados a cierres de sesión (`home.ts`, `cart.ts`, `productDetail.ts`, `orders.ts` del cliente) y se estandarizó el uso de **rutas absolutas** (`/src/pages/auth/login/login.html`) asegurando que cualquier redirección siempre vuelva a apuntar directamente al bloque raíz de la carpeta `src`, sin importar la profundidad previa de la página actual.
