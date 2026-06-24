@@ -21,12 +21,23 @@ export const removeUser = () => {
 export type CartMap = Record<string, number>; // clave: productId, valor: cantidad (de los productos) , para usar en el carrito y también para el storage del carrito
 
 // Creación de una constante para la clave de localStorage, para evitar errores de tipeo y facilitar cambios futuros, siguiendo la buena práctica de centralizar estos valores para mejor mantenibilidad.
-const CART_STORAGE_KEY = "store_cart_items";
+// TPI: Creación de una función dinámica para la clave de localStorage, para separar los carritos por usuario
+const getCartStorageKey = (): string => {
+  const userStr = getUSer();
+  if (userStr) {
+    try {
+      const user = JSON.parse(userStr) as IUser;
+      if (user && user.id) {
+        return `store_cart_items_${user.id}`;
+      }
+    } catch {}
+  }
+  return "store_cart_items_guest";
+};
 
 export const getCart = (): CartMap => {
   // Obtener el carrito almacenado en localStorage
-
-  const rawCart = localStorage.getItem(CART_STORAGE_KEY);
+  const rawCart = localStorage.getItem(getCartStorageKey());
 
   // Si no hay datos en localStorage, devolver un objeto vacío
   if (!rawCart) return {};
@@ -58,12 +69,12 @@ export const getCart = (): CartMap => {
   }
 };
 
-// Función para guardar el carrito en localStorage, recibe un objeto con la estructura CartMap, lo convierte a JSON y lo almacena bajo la clave definida en CART_STORAGE_KEY.
+// Función para guardar el carrito en localStorage, recibe un objeto con la estructura CartMap, lo convierte a JSON y lo almacena bajo la clave dinámica (TPI).
 export const saveCart = (items: CartMap): void => {
-  localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+  localStorage.setItem(getCartStorageKey(), JSON.stringify(items));
 };
 
-// Función para limpiar el carrito, elimina la entrada del carrito en localStorage utilizando la clave definida en CART_STORAGE_KEY.
+// Función para limpiar el carrito, elimina la entrada del carrito en localStorage utilizando la clave dinámica(TPI).
 export const clearCart = (): void => {
-  localStorage.removeItem(CART_STORAGE_KEY);
+  localStorage.removeItem(getCartStorageKey());
 };

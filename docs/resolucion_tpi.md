@@ -219,3 +219,9 @@ El módulo de pedidos es un requisito importante porque permite a los administra
 - **Solución implementada:** 
   1. Se agregó una barra inicial estricta al redireccionamiento estático del `index.html` (`window.location.href = '/src/pages/auth/login/login.html'`).
   2. Se auditaron todos los scripts vinculados a cierres de sesión (`home.ts`, `cart.ts`, `productDetail.ts`, `orders.ts` del cliente) y se estandarizó el uso de **rutas absolutas** (`/src/pages/auth/login/login.html`) asegurando que cualquier redirección siempre vuelva a apuntar directamente al bloque raíz de la carpeta `src`, sin importar la profundidad previa de la página actual.
+
+### Aislamiento de Carritos por Usuario (Claves Dinámicas en LocalStorage)
+
+- **Problema detectado:** El carrito de compras usaba una clave estática global en `localStorage` (`"store_cart_items"`). Esto provocaba que el carrito fuera "compartido" a nivel de navegador. Si un usuario dejaba productos y no se borraban al salir, el siguiente usuario que iniciaba sesión veía el carrito ajeno. Por el contrario, si se borraba la clave al cerrar sesión, el usuario dueño perdía sus productos si volvía a entrar más tarde.
+- **Solución implementada:** Se modificó la arquitectura de guardado local en `src/utils/localStorage.ts`. En lugar de utilizar una variable estática constante, se creó la función dinámica `getCartStorageKey()`. Esta función intercepta los datos de la sesión actual (`userData`) y genera una clave única con el patrón `"store_cart_items_{ID_DEL_USUARIO}"`. 
+- **Resultado:** Ahora, cuando el cliente cierra sesión, su carrito no se destruye, sino que queda aislado en su propia clave del navegador. Si otro usuario ingresa, no comparte la clave. Esto garantiza una persistencia correcta y diferenciada del estado, respetando la consigna estricta de implementar el carrito usando exclusivamente `localStorage` sin depender de una tabla backend.
