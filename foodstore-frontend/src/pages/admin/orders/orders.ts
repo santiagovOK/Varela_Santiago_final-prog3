@@ -97,7 +97,7 @@ const renderTable = () => {
         tr.innerHTML = `
             <td>#${order.id}</td>
             <td>${formatDate(order.fecha)}</td>
-            <td>-</td>
+            <td>${order.nombreCliente || "-"}</td>
             <td>${formatPrice(order.total)}</td>
             <td>${order.formaPago}</td>
             <td><span class="badge ${badgeClass}">${order.estado}</span></td>
@@ -123,7 +123,7 @@ const openOrderModal = (id: number) => {
     
     // Poblar resumen del pedido
     modalOrderId.textContent = order.id.toString();
-    modalClient.textContent = "Usuario Anónimo/Sistema"; // El backend no devuelve el usuario
+    modalClient.textContent = order.nombreCliente || "Consumidor Final";
     modalDate.textContent = formatDate(order.fecha);
     modalTotal.textContent = formatPrice(order.total);
     modalPayment.textContent = order.formaPago;

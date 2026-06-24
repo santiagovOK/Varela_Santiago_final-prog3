@@ -7,7 +7,7 @@ import com.final_prog3.foodstore_backend.entities.Pedido;
 import com.final_prog3.foodstore_backend.enums.Estado;
 import com.final_prog3.foodstore_backend.enums.FormaPago;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public record PedidoCreate(
@@ -18,7 +18,7 @@ public record PedidoCreate(
 ) {
     public Pedido toEntity() {
         return Pedido.builder()
-                .fecha(LocalDate.now())
+                .fecha(LocalDateTime.now())
                 .estado(this.estado != null ? this.estado : Estado.PENDIENTE)
                 .formaPago(this.formaPago)
                 .build();

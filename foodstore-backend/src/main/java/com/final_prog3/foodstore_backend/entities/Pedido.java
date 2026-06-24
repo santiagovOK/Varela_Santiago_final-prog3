@@ -24,16 +24,16 @@ import com.final_prog3.foodstore_backend.enums.Estado;
 import com.final_prog3.foodstore_backend.enums.FormaPago;
 import com.final_prog3.foodstore_backend.interfaces.Calculable;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
 @Getter
 @Setter
 // Evitamos que al hacer un print del Pedido, intente imprimir todos los detalles (y que el detalle imprima al pedido infinitamente). Esto ya estaba implementado antes.
-@ToString(exclude = "detalles")
-// Excluimos "detalles" del equals y hashCode para evitar problemas de recursividad infinita. Esto ya estaba implementado antes.
-@EqualsAndHashCode(callSuper = true, exclude = "detalles")
+@ToString(exclude = {"detalles", "usuario"})
+// Excluimos "detalles" y "usuario" del equals y hashCode para evitar problemas de recursividad infinita. Esto ya estaba implementado antes.
+@EqualsAndHashCode(callSuper = true, exclude = {"detalles", "usuario"})
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -42,7 +42,7 @@ import java.util.Set;
 @Entity
 public class Pedido extends Base implements Calculable {
 
-    private LocalDate fecha;
+    private LocalDateTime fecha;
     @Enumerated(EnumType.STRING)
     private Estado estado;
     private Double total;

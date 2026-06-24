@@ -63,20 +63,20 @@ public class PedidoServiceImp implements PedidoService {
             usuario.addPedido(pedido);
             usuarioRepository.save(usuario);
         }
-        return PedidoDto.toDto(pedido);
+        return mapToDto(pedido);
     }
 
     @Override
     public PedidoDto findById(Long id) {
         Pedido pedido = pedidoRepository.findByIdAndEliminadoFalse(id)
                 .orElseThrow(() -> new NullPointerException("No se encontró el pedido con id: " + id));
-        return PedidoDto.toDto(pedido);
+        return mapToDto(pedido);
     }
 
     @Override
     public List<PedidoDto> findAll() {
         List<Pedido> pedidos = pedidoRepository.findByEliminadoFalse();
-        return pedidos.stream().map(PedidoDto::toDto).toList();
+        return pedidos.stream().map(this::mapToDto).toList();
     }
 
     @Override
@@ -85,7 +85,7 @@ public class PedidoServiceImp implements PedidoService {
                 .orElseThrow(() -> new NullPointerException("No se encontró el pedido con id: " + idPedido));
         pedidoEdit.applyTo(pedido);
         pedido = pedidoRepository.save(pedido);
-        return PedidoDto.toDto(pedido);
+        return mapToDto(pedido);
     }
 
     @Override
@@ -103,7 +103,7 @@ public class PedidoServiceImp implements PedidoService {
                 .orElseThrow(() -> new NullPointerException("No se encontró el usuario con id: " + usuarioId));
         return usuario.getPedidos().stream()
                 .filter(p -> !p.isEliminado())
-                .map(PedidoDto::toDto).toList();
+                .map(this::mapToDto).toList();
     }
 
     // TPI: el primer update() existe para, a partir de una petición PUT, modificar un recurso de forma completa. updateStatus() se creó puntualmente para el requerimiento que indica que el Administrador cambie solo el Estado, un cambio parcial del objeto, a través del uso de PATCH
@@ -113,6 +113,13 @@ public class PedidoServiceImp implements PedidoService {
                 .orElseThrow(() -> new NullPointerException("No se encontró el pedido con id: " + id));
         pedido.setEstado(nuevoEstado);
         pedido = pedidoRepository.save(pedido);
-        return PedidoDto.toDto(pedido);
+        return mapToDto(pedido);
+    }
+
+    private PedidoDto mapToDto(Pedido pedido) {
+        String nombreCliente = usuarioRepository.findByPedidosId(pedido.getId())
+                .map(u -> u.getNombre() + " " + u.getApellido())
+                .orElse("Consumidor Final");
+        return PedidoDto.toDto(pedido, nombreCliente);
     }
 }

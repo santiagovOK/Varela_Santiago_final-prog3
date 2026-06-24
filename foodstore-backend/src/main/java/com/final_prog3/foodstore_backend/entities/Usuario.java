@@ -22,8 +22,8 @@ import com.final_prog3.foodstore_backend.enums.Rol;
 @Getter
 @Setter
 // Como buena práctica de seguridad, directamente evitamos que password se imprima en el ToString. Antes había usado "****", pero creo que esto es mejor para el uso de Lombok.
-@ToString(exclude = "password")
-@EqualsAndHashCode(callSuper = true)
+@ToString(exclude = {"password", "pedidos"})
+@EqualsAndHashCode(callSuper = true, exclude = "pedidos")
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor

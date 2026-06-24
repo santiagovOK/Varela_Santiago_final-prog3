@@ -225,3 +225,21 @@ El módulo de pedidos es un requisito importante porque permite a los administra
 - **Problema detectado:** El carrito de compras usaba una clave estática global en `localStorage` (`"store_cart_items"`). Esto provocaba que el carrito fuera "compartido" a nivel de navegador. Si un usuario dejaba productos y no se borraban al salir, el siguiente usuario que iniciaba sesión veía el carrito ajeno. Por el contrario, si se borraba la clave al cerrar sesión, el usuario dueño perdía sus productos si volvía a entrar más tarde.
 - **Solución implementada:** Se modificó la arquitectura de guardado local en `src/utils/localStorage.ts`. En lugar de utilizar una variable estática constante, se creó la función dinámica `getCartStorageKey()`. Esta función intercepta los datos de la sesión actual (`userData`) y genera una clave única con el patrón `"store_cart_items_{ID_DEL_USUARIO}"`. 
 - **Resultado:** Ahora, cuando el cliente cierra sesión, su carrito no se destruye, sino que queda aislado en su propia clave del navegador. Si otro usuario ingresa, no comparte la clave. Esto garantiza una persistencia correcta y diferenciada del estado, respetando la consigna estricta de implementar el carrito usando exclusivamente `localStorage` sin depender de una tabla backend.
+
+### Resolución de Discrepancia de Tipos (Enum) en Creación de Pedidos
+
+- **Problema detectado:** Al intentar realizar una compra desde el carrito, la consola arrojaba un `Error 500 (Internal Server Error)`. El administrador no podía visualizar nuevos pedidos porque las peticiones `POST` fallaban silenciosamente y no se guardaban en la base de datos.
+- **Causa raíz:** Existía una incompatibilidad en la serialización JSON. El frontend enviaba el valor del método de pago de forma capitalizada (ej: `"Efectivo"` o `"MercadoPago"`) a través del `<select>` de HTML, mientras que el backend esperaba estrictamente los valores del Enum `FormaPago` definidos en Java (`EFECTIVO`, `TARJETA`, `TRANSFERENCIA`). Al no coincidir los strings, la librería Jackson lanzaba una `HttpMessageNotReadableException`, la cual derivaba en el error 500.
+- **Solución implementada:** Se actualizaron los atributos `value` de las opciones del `<select>` en `cart.html` para reflejar con exactitud la nomenclatura en mayúsculas esperada por la clase Enum del backend, asegurando el correcto mapeo durante la deserialización.
+
+### Precisión Temporal y Mapeo Unidireccional en Panel de Pedidos (Alineación con UML)
+
+- **Problemas detectados:** 
+  1. En el panel de administrador, todos los pedidos aparecían agrupados desordenadamente y con una hora aparente de `00:00` ("placeholder").
+  2. La columna que indicaba el cliente que realizó la compra se encontraba en blanco (`"-"`), ya que el DTO que enviaba el backend no incluía dicha información.
+- **Causas subyacentes:** 
+  1. La entidad `Pedido` persistía la fecha utilizando la clase `LocalDate` (que omite información de tiempo). Cuando el Frontend parseaba la fecha, JavaScript rellenaba la hora ausente con ceros (`00:00`), haciendo que todas las transacciones del mismo día colapsaran en el algoritmo de ordenamiento temporal.
+  2. Adherido estrictamente al diagrama UML provisto por la cátedra, la relación entre `Usuario` y `Pedido` es de carácter **unidireccional** (El usuario conoce sus pedidos, pero el pedido desconoce a su usuario). Por consiguiente, el objeto `Pedido` no podía extraer directamente el nombre de su creador para enviarlo mediante el DTO.
+- **Soluciones implementadas:**
+  1. Se modificó el tipo de dato de `LocalDate` a `LocalDateTime` en toda la cadena de la entidad `Pedido` y sus DTOs correspondientes (`PedidoDto` y `PedidoCreate`). Con esta modificación de milisegundos, el frontend ahora ordena cronológicamente la tabla del administrador con exactitud.
+  2. Para incorporar el nombre del cliente al `PedidoDto` **sin transgredir la unidireccionalidad** del diagrama UML Se configuró una consulta inteligente en `UsuarioRepository` (`Optional<Usuario> findByPedidosId(Long id)`). El servicio `PedidoServiceImp` se encarga de interceptar la petición, buscar al usuario dueño del pedido mediante esa consulta cruzada por Repositorio, y adjuntar el nombre concatenado en el nuevo campo `nombreCliente` del DTO antes de despacharlo a la vista del administrador.

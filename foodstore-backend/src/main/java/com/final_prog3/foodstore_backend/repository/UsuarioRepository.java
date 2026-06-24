@@ -15,4 +15,7 @@ import java.util.Optional;
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     // Método para buscar por campo `mail` utilizando Optional para prevenir errores por `null`
     Optional<Usuario> findByMail(String mail);
+
+    // Método para buscar al Usuario dueño de un pedido específico (útil por relación unidireccional)
+    Optional<Usuario> findByPedidosId(Long id);
 }

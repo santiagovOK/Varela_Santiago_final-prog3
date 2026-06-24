@@ -13,5 +13,6 @@ export interface PedidoDto {
   estado: string; // PENDIENTE, PREPARACION, ENVIADO, ENTREGADO
   total: number;
   formaPago: string; // EFECTIVO, MERCADO_PAGO, TRANSFERENCIA, TARJETA
+  nombreCliente?: string;
   detalles: DetallePedidoDto[];
 }
