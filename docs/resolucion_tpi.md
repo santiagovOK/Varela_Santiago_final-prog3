@@ -243,3 +243,34 @@ El módulo de pedidos es un requisito importante porque permite a los administra
 - **Soluciones implementadas:**
   1. Se modificó el tipo de dato de `LocalDate` a `LocalDateTime` en toda la cadena de la entidad `Pedido` y sus DTOs correspondientes (`PedidoDto` y `PedidoCreate`). Con esta modificación de milisegundos, el frontend ahora ordena cronológicamente la tabla del administrador con exactitud.
   2. Para incorporar el nombre del cliente al `PedidoDto` **sin transgredir la unidireccionalidad** del diagrama UML Se configuró una consulta inteligente en `UsuarioRepository` (`Optional<Usuario> findByPedidosId(Long id)`). El servicio `PedidoServiceImp` se encarga de interceptar la petición, buscar al usuario dueño del pedido mediante esa consulta cruzada por Repositorio, y adjuntar el nombre concatenado en el nuevo campo `nombreCliente` del DTO antes de despacharlo a la vista del administrador.
+
+### Script de Ejecución Unificada (`start.sh`)
+
+- **Problema detectado:** El levantamiento del proyecto requería abrir dos terminales independientes y ejecutar comandos separados para el backend (Gradle) y frontend (Vite), lo cual entorpecía la experiencia de desarrollo y la posterior revisión de este proyecto.
+- **Solución implementada:** Se creó un script bash en la raíz del proyecto (`start.sh`) que utiliza `concurrently` (con la bandera `--yes` para ejecución directa vía npx) para levantar y unificar los logs de ambos servidores simultáneamente con un solo comando.
+
+### Lógica de Filtros y Botón en el Catálogo Frontend
+
+- **Problemas detectados:** 
+  1. El botón para agregar al carrito mostraba el texto "Disponible", lo cual no era intuitivo para el usuario.
+  2. Los filtros de "Ordenar por" y "Todos" estaban presentes en el HTML pero no tenían funcionalidad, generando confusión.
+- **Solución implementada:**
+  1. Se modificó el texto del botón a "Agregar +" para dejar clara su función en `home.ts`.
+  2. Se conectaron los selectores al estado de la vista (`HomeViewState`). Ahora el cliente puede ordenar el listado (por Menor precio, Mayor precio, o Nombre A-Z) y filtrar los productos por su estado de disponibilidad (Todos, Disponibles, Agotados).
+
+### Automatización de Estado 'Agotado' en el Backend
+
+- **Problema detectado:** Al efectuar una compra, el sistema restaba el stock correctamente en `PedidoServiceImp.java`, pero si este llegaba a 0, el producto continuaba figurando como disponible (`disponible = true`).
+- **Solución implementada:** Se agregó una validación inmediata luego de descontar el stock: si el remanente llega a 0, se ejecuta `producto.setDisponible(false)`. Esto automatiza el bloqueo del producto en la tienda sin intervención manual del administrador.
+
+### Límite de Stock en el Carrito Local
+
+- **Problema detectado:** El frontend permitía que el usuario continuara agregando productos al carrito (aumentando la cantidad almacenada en el `localStorage`) indefinidamente, sobrepasando el stock real disponible en la base de datos.
+- **Solución implementada:** 
+  1. Se agregó una comprobación en `addProductToCartStorage` (`home.ts`) que intercepta la acción y lanza un `alert` si la cantidad en el carrito iguala al stock máximo.
+  2. La tarjeta del producto desactiva visualmente el botón (cambiándolo a color gris con texto "Agotado") ni bien el límite es alcanzado. Adicionalmente, se agregaron registros (`console.log`) bajo la nomenclatura estándar del proyecto para auditar estos bloqueos.
+
+### Estandarización del Nombre de Usuario en la Navegación
+
+- **Problema detectado:** Mientras que en el panel administrativo la barra superior mostraba el nombre completo del administrador (`Hola, Nombre Apellido`), en las vistas del cliente (Catálogo, Carrito, Pedidos, Detalle) solo figuraba el nombre de pila.
+- **Solución implementada:** Se unificó el código en todos los controladores de vista del cliente (`home.ts`, `cart.ts`, `orders.ts`, `productDetail.ts`) inyectando el `${user.apellido}` en la concatenación del `userNameDisplay`, logrando una experiencia consistente en toda la plataforma.

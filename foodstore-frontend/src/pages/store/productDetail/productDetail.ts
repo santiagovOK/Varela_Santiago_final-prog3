@@ -22,7 +22,7 @@ if (!detailContainer || !cartCount || !userNameDisplay || !logoutBtn) {
 const rawUser = getUSer();
 if (rawUser) {
     const user = JSON.parse(rawUser);
-    userNameDisplay.textContent = user.nombre;
+    userNameDisplay.textContent = `${user.nombre} ${user.apellido}`;
     if (user.rol === "ADMIN" && adminLinkContainer) {
         adminLinkContainer.style.display = "block";
     }

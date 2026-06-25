@@ -38,6 +38,7 @@
 .cart-container {
     display: flex;
     gap: 2rem;
+    margin-top: 10px;
     align-items: flex-start;
 }
 
@@ -70,6 +71,7 @@
     cursor: pointer;
     font-size: 1rem;
     font-weight: bold;
+    margin: 5px;
 }
 .cart-container__clear-btn:hover {
     text-decoration: underline;

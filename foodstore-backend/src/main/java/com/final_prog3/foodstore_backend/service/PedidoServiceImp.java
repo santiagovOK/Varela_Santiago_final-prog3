@@ -52,6 +52,9 @@ public class PedidoServiceImp implements PedidoService {
                     throw new IllegalArgumentException("Stock insuficiente para el producto: " + producto.getNombre());
                 }
                 producto.setStock(producto.getStock() - detalleCreate.cantidad());
+                if (producto.getStock() == 0) {
+                    producto.setDisponible(false);
+                }
                 productoRepository.save(producto);
                 
                 pedido.addDetallePedido(detalleCreate.cantidad(), producto);

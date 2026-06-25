@@ -15,10 +15,12 @@ const cartCount = document.getElementById("cart-count") as HTMLSpanElement | nul
 const userNameDisplay = document.getElementById("user-name-display") as HTMLSpanElement | null;
 const adminLinkContainer = document.getElementById("admin-link-container") as HTMLLIElement | null;
 const logoutBtn = document.getElementById("logout-btn") as HTMLButtonElement | null;
+const sortSelect = document.getElementById("sort-select") as HTMLSelectElement | null;
+const availabilitySelect = document.getElementById("availability-select") as HTMLSelectElement | null;
 
 // Agrego un Guard clause (validación) por si falta algún nodo clave del HTML. Se detiene la ejecución y se lanza un error para evitar fallos silenciosos posteriores.
 // Parecido a la idea de `main.ts` de validación de rutas, pero aplicado a la integridad del DOM específico de esta vista.
-if (!productsList || !searchInput || !searchFeedback || !categoryList || !cartCount || !userNameDisplay || !logoutBtn) {
+if (!productsList || !searchInput || !searchFeedback || !categoryList || !cartCount || !userNameDisplay || !logoutBtn || !sortSelect || !availabilitySelect) {
   throw new Error("Faltan elementos del DOM en la vista store/home.");
 }
 
@@ -26,7 +28,7 @@ if (!productsList || !searchInput || !searchFeedback || !categoryList || !cartCo
 const rawUser = getUSer();
 if (rawUser) {
     const user = JSON.parse(rawUser);
-    userNameDisplay.textContent = user.nombre;
+    userNameDisplay.textContent = `${user.nombre} ${user.apellido}`;
     if (user.rol === "ADMIN" && adminLinkContainer) {
         adminLinkContainer.style.display = "block";
     }
@@ -48,6 +50,8 @@ let baseCategories: ICategory[] = [];
 type HomeViewState = {
   selectedCategory: string;
   searchTerm: string;
+  sortBy: string;
+  availability: string;
   filteredProducts: Product[];
 };
 
@@ -58,6 +62,8 @@ type HomeViewState = {
 const state: HomeViewState = {
   selectedCategory: "all",
   searchTerm: "",
+  sortBy: "none",
+  availability: "all",
   filteredProducts: [],
 };
 
@@ -93,16 +99,27 @@ const matchesSearch = (product: Product, searchTerm: string): boolean => {
 // Aplica ambos criterios de filtro sobre baseProducts y actualiza el estado.
 // Esta función será llamada por los listeners de búsqueda y categorías.
 const applyFilters = (): void => {
-  // Filtra baseProducts según categoría y término de búsqueda, y actualiza state.filteredProducts con el resultado.
-  state.filteredProducts = baseProducts.filter((product) => {
-    // Verifica con la función auxiliar si el producto coincide con la categoría seleccionada y el término de búsqueda.
+  // Filtra baseProducts según categoría, término de búsqueda y disponibilidad.
+  let filtered = baseProducts.filter((product) => {
     const categoryOk = matchesCategory(product, state.selectedCategory);
-    // Verifica con la función auxiliar si el producto coincide con el término de búsqueda.
     const searchOk = matchesSearch(product, state.searchTerm);
-    // El producto se incluye en el resultado solo si cumple ambos criterios (categoría y búsqueda) usando el operador AND.
-    return categoryOk && searchOk;
-    // Salida: actualiza state.filteredProducts con los productos que cumplen ambos criterios, para luego ser renderizados en la vista.
+    let availabilityOk = true;
+    if (state.availability === "available") availabilityOk = product.disponible === true;
+    if (state.availability === "unavailable") availabilityOk = product.disponible === false;
+    
+    return categoryOk && searchOk && availabilityOk;
   });
+
+  // Aplica ordenamiento
+  if (state.sortBy === "price-asc") {
+    filtered.sort((a, b) => a.precio - b.precio);
+  } else if (state.sortBy === "price-desc") {
+    filtered.sort((a, b) => b.precio - a.precio);
+  } else if (state.sortBy === "name-asc") {
+    filtered.sort((a, b) => a.nombre.localeCompare(b.nombre));
+  }
+
+  state.filteredProducts = filtered;
 };
 
 // 4 - Render de catálogo + feedback de resultados
@@ -132,12 +149,32 @@ const syncCartCountFromStorage = (): void => {
 
 // Función para agregar un producto al carrito, actualiza el carrito en localStorage y sincroniza el contador visual del carrito en la UI. Recibe el productId como string (obtenido del atributo data-product-id del botón).
 const addProductToCartStorage = (productId: string): void => {
+  const productIdNum = Number(productId);
+  const product = baseProducts.find(p => p.id === productIdNum);
+  if (!product) return;
+
   const cart = getCart(); // Obtiene el estado actual del carrito desde localStorage (par id - cantidad)
   const previousQuantity = cart[productId] ?? 0; // Obtiene la cantidad actual del producto en el carrito, si no existe se considera 0
+
+  if (previousQuantity >= product.stock) {
+    alert("No hay más stock disponible para este producto.");
+    console.log("[store-home] Intento fallido de agregar al carrito por falta de stock", {
+      productId: product.id,
+      stock: product.stock,
+      cartQuantity: previousQuantity
+    });
+    refreshView(); // Refresca para actualizar el botón a "Agotado"
+    return;
+  }
+
   cart[productId] = previousQuantity + 1; // Incrementa la cantidad del producto en el carrito
   saveCart(cart); // Funcion auxiliar que convierte el objeto cart a JSON y lo guarda en localStorage
   const totalUnits = getTotalUnits(cart); // Calcula la cantidad total de unidades en el carrito sumando las cantidades de todos los productos
   cartCount.textContent = String(totalUnits); // Actualiza el contador visual del carrito en la UI con la nueva cantidad total de unidades
+
+  if (cart[productId] >= product.stock) {
+    refreshView(); // Actualiza la vista inmediatamente si se agotó el stock con esta adición
+  }
 
   console.log("[store-home] Producto agregado al carrito", {
     productId,
@@ -150,9 +187,12 @@ const addProductToCartStorage = (productId: string): void => {
 
 // Crea el HTML de una tarjeta de producto usando la estructura BEM de home.html.
 // El botón "Agregar" queda preparado con data-product-id para conectarlo después al carrito.
-const createProductCardTemplate = (product: Product): string => {
+const createProductCardTemplate = (product: Product, cart: CartMap): string => {
   const firstCategoryName = product.categoriaDto?.nombre || "Sin categoria";
   const imageSrc = product.imagen && product.imagen.startsWith("http") ? product.imagen : `/images/${product.imagen || 'placeholder.jpg'}`;
+
+  const quantityInCart = cart[product.id] ?? 0;
+  const isSoldOut = !product.disponible || quantityInCart >= product.stock;
 
   return [
     '<li class="store-home__product-item">',
@@ -163,7 +203,7 @@ const createProductCardTemplate = (product: Product): string => {
     `    <p class="product-card__description">${product.descripcion}</p>`,
     '    <footer class="product-card__footer">',
     `      <p class="product-card__price">${formatPrice(product.precio)}</p>`,
-    `      <button class="product-card__add-btn" type="button" data-product-id="${product.id}">Disponible</button>`,
+    !isSoldOut ? `      <button class="product-card__add-btn" type="button" data-product-id="${product.id}">Agregar +</button>` : `      <button class="product-card__add-btn" type="button" disabled style="background-color: #ccc; cursor: not-allowed; color: #666;">Agotado</button>`,
     "    </footer>",
     "  </article>",
     "</li>",
@@ -176,8 +216,9 @@ const renderProducts = (): void => {
   productsList.innerHTML = ""; // Limpia el contenido existente del contenedor de productos para evitar duplicados.
 
   // Utilización del estado actual de los productos filtrados (state.filteredProducts) para generar el HTML de cada tarjeta, y luego se une todo en un solo string para asignarlo al innerHTML del contenedor.
+  const cart = getCart();
   const cardsMarkup = state.filteredProducts.map((product) => {
-    return createProductCardTemplate(product);
+    return createProductCardTemplate(product, cart);
     // createProductCardTemplate es la función auxiliar que genera el HTML de cada tarjeta, recibiendo un producto como argumento y devolviendo el string con la estructura HTML correspondiente.
   });
   
@@ -273,6 +314,30 @@ searchInput.addEventListener("input", (event) => {
   });
 });
 
+// Event listener para ordenar
+sortSelect.addEventListener("change", (event) => {
+  const target = event.target as HTMLSelectElement;
+  state.sortBy = target.value;
+  refreshView();
+  
+  console.log("[store-home] Filtro de ordenamiento actualizado", {
+    sortBy: state.sortBy,
+    filteredProducts: state.filteredProducts.length,
+  });
+});
+
+// Event listener para disponibilidad
+availabilitySelect.addEventListener("change", (event) => {
+  const target = event.target as HTMLSelectElement;
+  state.availability = target.value;
+  refreshView();
+  
+  console.log("[store-home] Filtro de disponibilidad actualizado", {
+    availability: state.availability,
+    filteredProducts: state.filteredProducts.length,
+  });
+});
+
 // Event listener para categorías
 categoryList.addEventListener("click", (event) => {
   const target = event.target as HTMLElement;
@@ -324,7 +389,7 @@ const loadData = async () => {
     const categories: ICategory[] = await categoriesRes.json();
 
     // Dataset base para catálogo: excluye con `filter` productos marcados como eliminados.
-    baseProducts = products.filter(p => !p.eliminado && p.disponible);
+    baseProducts = products.filter(p => !p.eliminado);
     baseCategories = categories.filter(c => !c.eliminado);
     
     state.filteredProducts = [...baseProducts];

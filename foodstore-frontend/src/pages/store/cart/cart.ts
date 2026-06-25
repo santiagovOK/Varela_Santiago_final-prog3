@@ -30,7 +30,7 @@ if (!cartItemsList || !cartSubtotal || !cartTotal || !cartItemsContainer || !car
 const rawUser = getUSer();
 if (rawUser) {
     const user: IUser = JSON.parse(rawUser);
-    userNameDisplay.textContent = user.nombre || "Usuario";
+    userNameDisplay.textContent = `${user.nombre || "Usuario"} ${user.apellido || ""}`.trim();
     if (cartPhone) {
         cartPhone.textContent = user.celular || "No especificado";
     }
