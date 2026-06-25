@@ -83,22 +83,51 @@
             <span id="cart-total" class="cart-summary__val">$0.00</span>
           </div>
 
-          <div class="cart-summary__payment">
-            <label for="forma-pago">Forma de pago</label>
-            <select id="forma-pago" class="cart-summary__select">
-              <option value="EFECTIVO">Efectivo</option>
-              <option value="TRANSFERENCIA">MercadoPago (Transferencia)</option>
-              <option value="TARJETA">Tarjeta</option>
-            </select>
-          </div>
-
-          <button id="checkout-btn" class="cart-summary__checkout-btn">Confirmar Pedido</button>
-          <p id="checkout-feedback" class="cart-summary__feedback" style="display:none; color: green; font-weight: bold; text-align: center; margin-top: 10px;">¡Pedido confirmado con éxito!</p>
+          <button id="open-checkout-modal-btn" class="cart-summary__checkout-btn">Proceder al Pago</button>
+          <button id="clear-cart-btn-sidebar" class="cart-summary__checkout-btn" style="background-color: #a02020; margin-top: 10px;">Vaciar Carrito</button>
         </div>
       </aside>
 
     </div>
   </main>
+
+  <dialog class="order-modal" id="checkout-modal">
+    <div class="order-modal__header">
+      <h3 class="order-modal__title">Completar Pedido</h3>
+      <button class="order-modal__close-btn" id="checkout-close-btn" aria-label="Cerrar modal">&times;</button>
+    </div>
+    <div class="order-modal__body" style="display: flex; flex-direction: column; gap: 1rem;">
+      <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+        <label for="checkout-phone" style="font-size: 0.9rem; font-weight: 500;">Teléfono</label>
+        <input type="text" id="checkout-phone" placeholder="Ej: +54 9 261 123-4567" disabled value="No especificado" style="padding: 0.75rem; border: 1px solid var(--color-borde); border-radius: 6px; background-color: #f1f1f1; cursor: not-allowed;" />
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+        <label for="checkout-address" style="font-size: 0.9rem; font-weight: 500;">Dirección de Entrega</label>
+        <input type="text" id="checkout-address" placeholder="Calle, número, piso, depto" disabled value="Mi Dirección 1234" style="padding: 0.75rem; border: 1px solid var(--color-borde); border-radius: 6px; background-color: #f1f1f1; cursor: not-allowed;" />
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+        <label for="forma-pago" style="font-size: 0.9rem; font-weight: 500;">Método de Pago</label>
+        <select id="forma-pago" style="padding: 0.75rem; border: 1px solid var(--color-borde); border-radius: 6px; background-color: var(--color-fondo);">
+          <option value="">Seleccione un método</option>
+          <option value="EFECTIVO">Efectivo</option>
+          <option value="TRANSFERENCIA">MercadoPago (Transferencia)</option>
+          <option value="TARJETA">Tarjeta</option>
+        </select>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+        <label for="checkout-notes" style="font-size: 0.9rem; font-weight: 500;">Notas adicionales (opcional)</label> <!-- Solo una cuestión estética, ya que el campo notas no está en el backend / UML solicitado -->
+        <input type="text" id="checkout-notes" placeholder="Instrucciones especiales, timbre, etc." style="padding: 0.75rem; border: 1px solid var(--color-borde); border-radius: 6px;" />
+      </div>
+      
+      <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--color-borde); padding-top: 1rem; margin-top: 0.5rem;">
+        <span style="font-weight: bold; color: var(--color-primario);">Total a pagar:</span>
+        <span id="checkout-modal-total" style="color: var(--color-primario); font-weight: bold; font-size: 1.25rem;">$0.00</span>
+      </div>
+
+      <button id="checkout-btn" class="cart-summary__checkout-btn" style="background-color: #00c896; margin-top: 1rem;">Confirmar Pedido</button>
+      <p id="checkout-feedback" style="display:none; color: green; font-weight: bold; text-align: center; margin-top: 10px;">¡Pedido confirmado con éxito!</p>
+    </div>
+  </dialog>
 
   <script type="module" src="./cart.ts"></script>
 </body>

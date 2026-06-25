@@ -12,9 +12,14 @@ const cartItemsContainer = document.getElementById("cart-items-container") as HT
 const cartEmpty = document.getElementById("cart-empty") as HTMLElement | null;
 const cartCount = document.getElementById("cart-count") as HTMLSpanElement | null;
 const clearCartBtn = document.getElementById("clear-cart-btn") as HTMLButtonElement | null;
+const clearCartBtnSidebar = document.getElementById("clear-cart-btn-sidebar") as HTMLButtonElement | null;
 const checkoutBtn = document.getElementById("checkout-btn") as HTMLButtonElement | null;
 const formaPagoSelect = document.getElementById("forma-pago") as HTMLSelectElement | null;
 const checkoutFeedback = document.getElementById("checkout-feedback") as HTMLParagraphElement | null;
+const openCheckoutModalBtn = document.getElementById("open-checkout-modal-btn") as HTMLButtonElement | null;
+const checkoutModal = document.getElementById("checkout-modal") as HTMLDialogElement | null;
+const checkoutCloseBtn = document.getElementById("checkout-close-btn") as HTMLButtonElement | null;
+const checkoutModalTotal = document.getElementById("checkout-modal-total") as HTMLSpanElement | null;
 const cartPhone = document.getElementById("cart-phone") as HTMLSpanElement | null;
 
 const userNameDisplay = document.getElementById("user-name-display") as HTMLSpanElement | null;
@@ -22,7 +27,7 @@ const adminLinkContainer = document.getElementById("admin-link-container") as HT
 const logoutBtn = document.getElementById("logout-btn") as HTMLButtonElement | null;
 
 // Guard clause para evitar errores silenciosos si cambia el HTML.
-if (!cartItemsList || !cartSubtotal || !cartTotal || !cartItemsContainer || !cartEmpty || !cartCount || !clearCartBtn || !checkoutBtn || !formaPagoSelect || !userNameDisplay || !logoutBtn || !cartPhone) {
+if (!cartItemsList || !cartSubtotal || !cartTotal || !cartItemsContainer || !cartEmpty || !cartCount || !clearCartBtn || !checkoutBtn || !formaPagoSelect || !userNameDisplay || !logoutBtn || !cartPhone || !openCheckoutModalBtn || !checkoutModal || !checkoutCloseBtn || !checkoutModalTotal) {
   throw new Error("Faltan elementos del DOM en la vista store/cart.");
 }
 
@@ -33,6 +38,10 @@ if (rawUser) {
     userNameDisplay.textContent = `${user.nombre || "Usuario"} ${user.apellido || ""}`.trim();
     if (cartPhone) {
         cartPhone.textContent = user.celular || "No especificado";
+    }
+    const checkoutPhone = document.getElementById("checkout-phone") as HTMLInputElement | null;
+    if (checkoutPhone) {
+        checkoutPhone.value = user.celular || "No especificado";
     }
     if (user.rol === "ADMIN" && adminLinkContainer) {
         adminLinkContainer.style.display = "block";
@@ -145,6 +154,7 @@ const updateTotals = (items: CartItem[]): void => {
   // Formateo de totales a formato de moneda ARS utilizando la función formatPrice
   cartSubtotal.textContent = formatPrice(total);
   cartTotal.textContent = formatPrice(total);
+  checkoutModalTotal.textContent = formatPrice(total);
 
   console.log("[store-cart] Totales actualizados", {
     lines,
@@ -191,14 +201,14 @@ const toggleEmptyState = (hasItems: boolean): void => {
   if (hasItems) {
     cartItemsContainer.hidden = false;
     cartEmpty.hidden = true;
-    checkoutBtn.disabled = false;
+    openCheckoutModalBtn.disabled = false;
     console.log("[store-cart] Estado de vista", { hasItems: true });
     return;
   }
 
   cartItemsContainer.hidden = true;
   cartEmpty.hidden = false;
-  checkoutBtn.disabled = true;
+  openCheckoutModalBtn.disabled = true;
   console.log("[store-cart] Estado de vista", { hasItems: false });
 };
 
@@ -319,7 +329,7 @@ cartItemsList.addEventListener("click", (event: MouseEvent) => {
   renderCartView();
 });
 
-clearCartBtn.addEventListener("click", () => {
+const handleClearCart = () => {
   const previousItems = { ...state.items };
   state.items = {};
   clearCart();
@@ -328,6 +338,19 @@ clearCartBtn.addEventListener("click", () => {
     removedItemsCount: Object.keys(previousItems).length,
   });
   renderCartView();
+};
+
+clearCartBtn.addEventListener("click", handleClearCart);
+if (clearCartBtnSidebar) {
+  clearCartBtnSidebar.addEventListener("click", handleClearCart);
+}
+
+openCheckoutModalBtn.addEventListener("click", () => {
+  checkoutModal.showModal();
+});
+
+checkoutCloseBtn.addEventListener("click", () => {
+  checkoutModal.close();
 });
 
 checkoutBtn.addEventListener("click", async () => {

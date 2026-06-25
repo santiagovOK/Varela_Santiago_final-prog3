@@ -246,7 +246,7 @@ El módulo de pedidos es un requisito importante porque permite a los administra
 
 ### Script de Ejecución Unificada (`start.sh`)
 
-- **Problema detectado:** El levantamiento del proyecto requería abrir dos terminales independientes y ejecutar comandos separados para el backend (Gradle) y frontend (Vite), lo cual entorpecía la experiencia de desarrollo (DX).
+- **Problema detectado:** El levantamiento del proyecto requería abrir dos terminales independientes y ejecutar comandos separados para el backend (Gradle) y frontend (Vite), lo cual entorpecía la experiencia de desarrollo y la posterior revisión de este proyecto.
 - **Solución implementada:** Se creó un script bash en la raíz del proyecto (`start.sh`) que utiliza `concurrently` (con la bandera `--yes` para ejecución directa vía npx) para levantar y unificar los logs de ambos servidores simultáneamente con un solo comando.
 
 ### Lógica de Filtros y Botón en el Catálogo Frontend
@@ -274,3 +274,11 @@ El módulo de pedidos es un requisito importante porque permite a los administra
 
 - **Problema detectado:** Mientras que en el panel administrativo la barra superior mostraba el nombre completo del administrador (`Hola, Nombre Apellido`), en las vistas del cliente (Catálogo, Carrito, Pedidos, Detalle) solo figuraba el nombre de pila.
 - **Solución implementada:** Se unificó el código en todos los controladores de vista del cliente (`home.ts`, `cart.ts`, `orders.ts`, `productDetail.ts`) inyectando el `${user.apellido}` en la concatenación del `userNameDisplay`, logrando una experiencia consistente en toda la plataforma.
+
+### Implementación de Modales Visuales Nativos (Carrito y Mis Pedidos)
+
+- **Problema detectado:** Faltaban implementarse dos interfaces solicitadas en los diseños del proyecto (`order-confirmation_template` y `client-order_template`), y la etiqueta `<dialog>` fallaba en centrarse correctamente por defecto en los distintos navegadores.
+- **Solución implementada:** 
+  1. **Checkout del Carrito:** Se diseñó el modal de confirmación en `cart.html` incrustando allí la selección de Método de Pago. Se agregaron campos bloqueados (`disabled`) para Teléfono y Dirección de entrega, inyectando el número de la sesión del cliente en TypeScript. Esto logra la estética solicitada sin alterar el JSON (`PedidoCreate`) que consume el backend.
+  2. **Detalles en Mis Pedidos:** Se reestructuró la maquetación de la tarjeta en `orders.ts`. Se omitió el botón "Ver Detalles" explícito, renderizando el conteo y listado de productos directamente en la tarjeta (haciendo clickeable el contenedor entero para abrir el modal). Además, se añadió lógica condicional en la plantilla literal para ocultar el cartel de "Tu pedido está siendo procesado" cuando el estado es `TERMINADO` o `CANCELADO`.
+  3. **Centrado Global de CSS:** Se aplicó `position: fixed` y traslación exacta al `50%` en las clases `.order-modal` de `cart.css` y `orders.css` para forzar a la caja principal a ocupar el centro de la pantalla.

@@ -87,28 +87,36 @@ const renderError = (message: string) => {
 };
 
 const createOrderCardTemplate = (order: PedidoDto): string => {
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case "PENDIENTE": return `<span class="order-card__badge" style="background-color: #ffedcc; color: #cc8400; padding: 0.25rem 0.5rem; border-radius: 12px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase;">PENDIENTE</span>`;
+      case "CONFIRMADO": return `<span class="order-card__badge" style="background-color: #cce5ff; color: #004085; padding: 0.25rem 0.5rem; border-radius: 12px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase;">CONFIRMADO</span>`;
+      case "TERMINADO": return `<span class="order-card__badge" style="background-color: #d4edda; color: #155724; padding: 0.25rem 0.5rem; border-radius: 12px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase;">TERMINADO</span>`;
+      case "CANCELADO": return `<span class="order-card__badge" style="background-color: #f8d7da; color: #721c24; padding: 0.25rem 0.5rem; border-radius: 12px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase;">CANCELADO</span>`;
+      default: return `<span class="order-card__badge">${status}</span>`;
+    }
+  };
+
+  const productList = order.detalles.map(d => `<div style="font-size: 0.85rem; color: #555; margin-bottom: 0.3rem;">• ${d.nombreProducto} (x${d.cantidad})</div>`).join("");
+  const totalItems = order.detalles.reduce((acc, d) => acc + d.cantidad, 0);
+
   return `
-    <li class="order-card">
-      <div class="order-card__header">
-        <span class="order-card__id">Pedido #${order.id}</span>
-        <span class="order-card__date">${formatDate(order.fecha)}</span>
+    <li class="order-card" style="cursor: pointer; transition: transform 0.2s;" data-order-id="${order.id}">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid var(--color-borde); padding-bottom: 0.8rem; margin-bottom: 0.8rem;">
+        <div>
+          <div style="font-weight: bold; font-size: 0.95rem; color: var(--color-texto); margin-bottom: 0.3rem;">Pedido #ORD-${order.id}</div>
+          <div style="font-size: 0.8rem; color: var(--color-texto-mutado);">📅 ${formatDate(order.fecha)}</div>
+        </div>
+        ${getStatusBadge(order.estado)}
       </div>
-      <div class="order-card__body">
-        <div class="order-card__info-row">
-          <span class="order-card__label">Estado</span>
-          <span class="${getStatusClass(order.estado)}">${order.estado}</span>
-        </div>
-        <div class="order-card__info-row">
-          <span class="order-card__label">Forma de Pago</span>
-          <span class="order-card__value">${order.formaPago.replace('_', ' ')}</span>
-        </div>
-        <div class="order-card__info-row">
-          <span class="order-card__label">Total</span>
-          <span class="order-card__value" style="color: var(--color-primario); font-weight: bold;">${formatPrice(order.total)}</span>
-        </div>
+      
+      <div style="margin-bottom: 1rem;">
+        ${productList}
       </div>
-      <div class="order-card__footer">
-        <button class="order-card__btn" data-order-id="${order.id}">Ver Detalles</button>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed var(--color-borde); padding-top: 0.8rem;">
+        <span style="font-size: 0.85rem; color: var(--color-texto-mutado);">📦 ${totalItems} producto(s)</span>
+        <span style="color: var(--color-primario); font-weight: bold; font-size: 1.1rem;">${formatPrice(order.total)}</span>
       </div>
     </li>
   `;
@@ -137,24 +145,79 @@ const openOrderModal = (orderId: number) => {
 
   modalTitle.textContent = `Detalle del Pedido #${order.id}`;
 
+  const formatDate = (dateStr: string) => {
+    const d = new Date(dateStr);
+    return new Intl.DateTimeFormat('es-AR', {
+      day: 'numeric', month: 'long', year: 'numeric',
+      hour: 'numeric', minute: 'numeric'
+    }).format(d);
+  };
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case "PENDIENTE": return `<span class="order-card__badge" style="background-color: #ffedcc; color: #cc8400; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem; font-weight: bold; text-transform: uppercase;">PENDIENTE</span>`;
+      case "CONFIRMADO": return `<span class="order-card__badge" style="background-color: #cce5ff; color: #004085; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem; font-weight: bold; text-transform: uppercase;">CONFIRMADO</span>`;
+      case "TERMINADO": return `<span class="order-card__badge" style="background-color: #d4edda; color: #155724; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem; font-weight: bold; text-transform: uppercase;">TERMINADO</span>`;
+      case "CANCELADO": return `<span class="order-card__badge" style="background-color: #f8d7da; color: #721c24; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem; font-weight: bold; text-transform: uppercase;">CANCELADO</span>`;
+      default: return `<span class="order-card__badge">${status}</span>`;
+    }
+  };
+
+  const userStr = localStorage.getItem("user");
+  const userCelular = userStr ? JSON.parse(userStr).celular : "No especificado";
+
   const detailsHtml = order.detalles.map(detalle => `
-    <div class="detail-item">
-      <div class="detail-item__info">
-        <span class="detail-item__name">${detalle.nombreProducto}</span>
-        <span class="detail-item__qty">Cantidad: ${detalle.cantidad}</span>
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 0.5rem; margin-bottom: 0.5rem;">
+      <div>
+        <div style="font-weight: 500; font-size: 0.9rem;">${detalle.nombreProducto}</div>
+        <div style="font-size: 0.8rem; color: #666;">Cantidad: ${detalle.cantidad} x ${formatPrice(detalle.subtotal / detalle.cantidad)}</div>
       </div>
-      <span class="detail-item__subtotal">${formatPrice(detalle.subtotal)}</span>
+      <div style="color: var(--color-primario); font-weight: bold;">${formatPrice(detalle.subtotal)}</div>
     </div>
   `).join("");
 
   modalBody.innerHTML = `
-    <div class="detail-list">
+    <div style="text-align: center; margin-bottom: 1.5rem;">
+      ${getStatusBadge(order.estado)}
+      <div style="font-size: 0.85rem; color: #666; margin-top: 0.5rem;">📅 ${formatDate(order.fecha)}</div>
+    </div>
+
+    <div style="background-color: #f8f9fa; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+      <h4 style="margin: 0 0 0.75rem 0; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem;">📍 Información de Entrega</h4>
+      <div style="font-size: 0.85rem; color: #333; display: flex; flex-direction: column; gap: 0.4rem;">
+        <div><strong>Dirección:</strong> Mi Dirección 1234</div>
+        <div><strong>Teléfono:</strong> ${userCelular}</div>
+        <div><strong>Método de pago:</strong> 💵 ${order.formaPago}</div>
+      </div>
+    </div>
+
+    <div style="margin-bottom: 1.5rem;">
+      <h4 style="margin: 0 0 0.75rem 0; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem;">🛍️ Productos</h4>
       ${detailsHtml}
+      
+      <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: #666; margin-top: 1rem;">
+        <span>Subtotal:</span>
+        <span>${formatPrice(order.total)}</span>
+      </div>
+      <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: #666; margin-top: 0.25rem;">
+        <span>Envío:</span>
+        <span>$0.00</span>
+      </div>
+      <div style="display: flex; justify-content: space-between; font-size: 1rem; font-weight: bold; color: var(--color-primario); margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px dashed #ccc;">
+        <span>Total:</span>
+        <span>${formatPrice(order.total)}</span>
+      </div>
     </div>
-    <div style="margin-top: 1.5rem; text-align: right; border-top: 1px solid var(--color-borde); padding-top: 1rem;">
-      <span style="font-weight: bold; color: var(--color-texto);">Total Pagado: </span>
-      <span style="font-weight: bold; color: var(--color-primario); font-size: 1.25rem;">${formatPrice(order.total)}</span>
+
+    ${(order.estado !== 'TERMINADO' && order.estado !== 'CANCELADO') ? `
+    <div style="background-color: #fff3cd; color: #856404; padding: 1rem; border-radius: 8px; border: 1px solid #ffeeba; display: flex; gap: 0.5rem; align-items: flex-start;">
+      <span>⏳</span>
+      <div>
+        <strong style="display: block; font-size: 0.9rem;">Tu pedido está siendo procesado</strong>
+        <span style="font-size: 0.8rem;">Te notificaremos cuando esté listo para entrega.</span>
+      </div>
     </div>
+    ` : ''}
   `;
 
   orderModal.showModal();
@@ -227,8 +290,9 @@ orderModal.addEventListener("click", (e) => {
 // Delegación de eventos para los botones de "Ver Detalles"
 ordersContent.addEventListener("click", (e) => {
   const target = e.target as HTMLElement;
-  if (target.classList.contains("order-card__btn")) {
-    const orderIdStr = target.getAttribute("data-order-id");
+  const orderCard = target.closest('.order-card');
+  if (orderCard) {
+    const orderIdStr = orderCard.getAttribute("data-order-id");
     if (orderIdStr) {
       openOrderModal(parseInt(orderIdStr, 10));
     }
