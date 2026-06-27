@@ -35,5 +35,8 @@ public class Base {
     private Long id;
 
     private boolean eliminado;
+    
+    @org.hibernate.annotations.CreationTimestamp
+    @jakarta.persistence.Column(updatable = false)
     private LocalDateTime createdAt;
 }
