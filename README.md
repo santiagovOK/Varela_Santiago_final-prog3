@@ -116,9 +116,7 @@ Una vez que el backend (Spring Boot) se encuentre en ejecución, la documentaci�
 
 ## Validación
 
-El proceso detallado de las pruebas de integración, verificación de los flujos principales (Admin y Cliente) y el control de reglas de negocio se encuentra documentado paso a paso en el siguiente archivo:
-
-- [docs/validación_manual.md](docs/validación_manual.md)
+El proceso detallado de las pruebas de integración, verificación de los flujos principales (Admin y Cliente) y el control de reglas de negocio se encuentra documentado paso a paso en el siguiente archivo: [docs/validacion_manual.md](docs/validacion_manual.md)
 
 ## 📊 Diagrama UML
 
