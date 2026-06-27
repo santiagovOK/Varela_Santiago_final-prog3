@@ -71,7 +71,7 @@ const loadDashboardStats = async () => {
                     item.className = "summary-item";
                     
                     const date = order.fecha ? new Date(order.fecha).toLocaleDateString() : 'Sin fecha';
-                    const customer = order.usuarioDto ? `${order.usuarioDto.nombre} ${order.usuarioDto.apellido}` : 'Cliente anónimo';
+                    const customer = order.nombreCliente || 'Cliente anónimo';
                     
                     item.innerHTML = `
                         <div class="summary-item__info">
